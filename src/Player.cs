@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import com.codingame.gameengine.core.AbstractPlayer;
 
-public class Player extends AbstractPlayer {
+public class Player : AbstractPlayer {
     public List<Hero> heroes = new ArrayList<>();
     public Tower tower;
     public int gold;
@@ -18,14 +18,14 @@ public class Player extends AbstractPlayer {
         this.heroes.add(hero);
     }
 
-    public void handlePlayerOutputs(String[] outputs) throws Exception{
+    public void handlePlayerOutputs(string[] outputs) throws Exception{
         List<Hero> internalHeroes = new ArrayList<>(heroes);
         if(outputs.length==2 && outputs[1].startsWith("SELL") && heroesAlive() == 2){ //Flip direction to allow other way commands
             Hero first = internalHeroes.get(0);
             internalHeroes.remove(0);
             internalHeroes.add(first);
 
-            String temp = outputs[0];
+            string temp = outputs[0];
             outputs[0] = outputs[1];
             outputs[1] = temp;
         }
@@ -42,25 +42,25 @@ public class Player extends AbstractPlayer {
                 continue;
             }
 
-            String roundOutput = outputs[outputCounter++];
+            string roundOutput = outputs[outputCounter++];
             doHeroCommand(roundOutput, hero);
         }
     }
 
-    private void doHeroCommand(String roundOutput, Hero hero){
-        String[] roundOutputSplitted = roundOutput.split(";", 2);
+    private void doHeroCommand(string roundOutput, Hero hero){
+        string[] roundOutputSplitted = roundOutput.split(";", 2);
 
         try{
 
-            String message = roundOutputSplitted.length > 1 ? roundOutputSplitted[1] : "";
+            string message = roundOutputSplitted.length > 1 ? roundOutputSplitted[1] : "";
             Const.viewController.addMessageToHeroHud(hero, message);
 
-            String [] outputValues = roundOutputSplitted[0].split(" ");
-            String command = outputValues[0];
+            string [] outputValues = roundOutputSplitted[0].split(" ");
+            string command = outputValues[0];
             int arguments = outputValues.length-1;
 
             // Verification
-            boolean allNumbers = true;
+            bool allNumbers = true;
             for(int num = 1; num < outputValues.length;num++){
                 if(!Utilities.isNumber(outputValues[num])) allNumbers = false;
             }
@@ -74,7 +74,7 @@ public class Player extends AbstractPlayer {
                 hero.runTowards(target);
                 Unit unit = Const.game.getUnitOfId(id);
                 if (unit != null) {
-                    Const.game.events.add(new Event.DelayedAttackEvent(unit, hero, Utilities.timeToReachTarget(hero, target, hero.moveSpeed)));
+                    Const.game.events.Add(new Event.DelayedAttackEvent(unit, hero, Utilities.timeToReachTarget(hero, target, hero.moveSpeed)));
                 }else printError("Can't attack unit of id: " + id);
             }
 
@@ -85,7 +85,7 @@ public class Player extends AbstractPlayer {
             }
 
             else if (command.equals("ATTACK_NEAREST") && arguments == 1  && !allNumbers) {
-                String unitType = outputValues[1];
+                string unitType = outputValues[1];
                 double dist = 99999999;
                 Unit toHit = hero.findClosestOnOtherTeam(unitType);
                 if (toHit != null) {
@@ -119,7 +119,7 @@ public class Player extends AbstractPlayer {
             }
 
             else if (command.equals("SELL") && arguments == 1 && !allNumbers) {
-                String itemName = outputValues[1];
+                string itemName = outputValues[1];
                 Optional<Item> foundItem = hero.items.stream().filter(currItem -> currItem.name.equals(itemName)).findFirst();
 
                 if(foundItem == null || !foundItem.isPresent()){
@@ -196,7 +196,7 @@ public class Player extends AbstractPlayer {
         return alive;
     }
 
-    @Override
+    override
     public int getExpectedOutputLines() {
         if (this.heroes.size() < Const.HEROCOUNT) return 1;
         return (int) this.heroes.stream().filter(h -> !h.isDead).count();
@@ -210,7 +210,7 @@ public class Player extends AbstractPlayer {
     	this.gold = amount;
     }
 
-    private void printError(String message){
+    private void printError(string message){
         Const.viewController.addSummary(message);
     }
 }

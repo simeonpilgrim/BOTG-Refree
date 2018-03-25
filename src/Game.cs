@@ -1,14 +1,15 @@
-package com.codingame.game;
+using System;
+using System.Collections.Generic;
 
-import java.util.*;
-
-public class Game {
+namespace BOTG_Refree
+{
+    public class Game {
     // following two lists will be sent individually to the players, based on what heroes are visible
 
-    public ArrayList<Unit> allUnits = new ArrayList<>();
+    public List<Unit> allUnits = new ArrayList<>();
     public List<Bush> bushes = new ArrayList<>();
     public List<Event> events = new ArrayList<>();
-    public Map<String, Item> items;
+    public Map<string, Item> items;
     public int round;
     public List<Hero> visibleHeroes = new ArrayList<>();
     public int forestCampCount = 0;
@@ -32,8 +33,8 @@ public class Game {
 
         // Inform events about speed changes of moving units.
         for(Unit unit : allUnits){
-            if(Math.abs(unit.vx) > Const.EPSILON || Math.abs(unit.vy) > Const.EPSILON){
-                Const.viewController.addEffect(unit, unit.targetPointOfMovement(), "movement", 1.0);
+            if(Math.abs(unit.vx) > Const.EPSILON || Math.Abs(unit.vy) > Const.EPSILON){
+                //Const.viewController.addEffect(unit, unit.targetPointOfMovement(), "movement", 1.0);
                 for(int i = events.size()-1; i >= 0; i--){
                     Event event = events.get(i);
                     if(event.afterAnotherEvent(unit, Event.SPEEDCHANGED, 0.0)){
@@ -45,7 +46,7 @@ public class Game {
 
         while (t <= Const.ROUNDTIME) {
             if(isGameOver(players)) {
-                Const.viewController.afterRound();
+                //Const.viewController.afterRound();
                 return;
             }
 
@@ -80,7 +81,7 @@ public class Game {
             Collections.sort(occuringEvents, Comparator.comparingInt(Event::getOutcome));
 
             for(Event currentEvent : occuringEvents){
-                ArrayList<Unit> affectedUnits = currentEvent.onEventTime(t);
+                List<Unit> affectedUnits = currentEvent.onEventTime(t);
 
                 handleAfterEvents(affectedUnits, currentEvent.getOutcome());
                 if(t > 0){
@@ -123,7 +124,7 @@ public class Game {
             Unit target = entry.getKey();
             List<Damage> dmgs = entry.getValue();
             int totalDamage = 0;
-            boolean anyHero = target instanceof Hero;
+            bool anyHero = target instanceof Hero;
 
             Unit highestDamageUnit = null;
 
@@ -218,7 +219,7 @@ public class Game {
                 }
             }
 
-            ArrayList<Unit> affectedUnits = new ArrayList<>();
+            List<Unit> affectedUnits = new ArrayList<>();
             affectedUnits.add(target);
             handleAfterEvents(affectedUnits, Event.LIFECHANGED);
         }
@@ -226,7 +227,7 @@ public class Game {
         damages.clear();
     }
 
-    private void handleAfterEvents(ArrayList<Unit> affectedUnits, int outcome){
+    private void handleAfterEvents(List<Unit> affectedUnits, int outcome){
         for (int i = events.size() - 1; i >= 0; i--) {
             Event event = events.get(i);
             for (Unit unit : affectedUnits){
@@ -279,7 +280,7 @@ public class Game {
     }
 
 
-    public boolean isGameOver(List<Player> players){
+    public bool isGameOver(List<Player> players){
         for(Player player : players){
             if(player.tower.isDead) return true;
             if(player.heroesAlive()==0) return true;
@@ -381,4 +382,5 @@ public class Game {
             }
         }
     }
+}
 }

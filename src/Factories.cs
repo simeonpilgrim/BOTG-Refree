@@ -1,9 +1,9 @@
-package com.codingame.game;
+using System;
+using System.Collections.Generic;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class Factories {
+namespace BOTG_Refree
+{
+    public class Factories {
 
 
     enum HeroType {
@@ -42,11 +42,11 @@ public class Factories {
         }
         unit.attackTime = 0.2;
 
-        Const.viewController.addSprite(unit, team);
+        //Const.viewController.addSprite(unit, team);
         return unit;
     }
 
-    public static Hero generateHero(String type, Player player, Point spawn) throws IllegalArgumentException {
+    public static Hero generateHero(string type, Player player, Point spawn) throws IllegalArgumentException {
         int team = player.getIndex();
         Hero hero = new Hero(spawn.x, spawn.y, 1, team, 200, player, type);
         hero.skills[0] = new Skills.EmptySkill();
@@ -126,20 +126,20 @@ public class Factories {
             hero.skills[2] = new Skills.EmptySkill();
         }
 
-        Const.viewController.addSprite(hero, team);
+        //Const.viewController.addSprite(hero, team);
         return hero;
     }
 
     public static Tower generateTower(Player player, int team) {
         Point spawn = team == 0 ? Const.TOWERTEAM0 : Const.TOWERTEAM1;
         Tower tower = new Tower(spawn.x, spawn.y, (int)(Const.TOWERHEALTH*Const.TOWERHEALTHSCALE), team, player);
-        tower.skin = team == 1 ? Const.BLUETOWER : Const.REDTOWER;
+        //tower.skin = team == 1 ? Const.BLUETOWER : Const.REDTOWER;
         tower.range = 400;
         tower.damage = Const.TOWERDAMAGE;
         player.tower = tower;
         tower.attackTime = 0.2;
 
-        Const.viewController.addSprite(tower, team);
+        //Const.viewController.addSprite(tower, team);
         return tower;
     }
 
@@ -147,7 +147,7 @@ public class Factories {
         Bush bush = new Bush(point.x, point.y);
         bush.skin = Const.BUSH;
 
-        Const.viewController.addObstacle(bush);
+        //Const.viewController.addObstacle(bush);
         return bush;
     }
 
@@ -160,14 +160,16 @@ public class Factories {
         creature.moveSpeed = 250;
         creature.goldValue = (int)(Const.NEUTRALGOLD*amplitude);
         creature.creatureType = "GROOT";
-        Const.viewController.addSprite(creature, -1, (1-1.0/3.0)+amplitude/3);
+        //Const.viewController.addSprite(creature, -1, (1-1.0/3.0)+amplitude/3);
         creature.attackTime = 0.2;
 
         return creature;
     }
 
-    public static Map<String, Item> createItems(int playersGold){
+    public static Map<string, Item> createItems(int playersGold){
         if(Const.IGNOREITEMS) return new HashMap<>();
         return Const.mapFactory.generateItems(playersGold);
     }
+}
+
 }

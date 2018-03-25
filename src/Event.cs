@@ -1,21 +1,22 @@
-package com.codingame.game;
+using System;
+using System.Collections.Generic;
 
-import java.util.ArrayList;
-
-public abstract class Event {
+namespace BOTG_Refree
+{
+    public abstract class Event {
     public static int NONE = 0;
     public static int LIFECHANGED = 1;
     public static int SPEEDCHANGED = 2;
     public static int TELEPORTED = 4;
     public static int STUNNED = 8;
 
-    private static ArrayList<Unit> EMPTYLIST = new ArrayList<>();
+    private static List<Unit> EMPTYLIST = new List<Unit>();
 
     double _t;
     double t;
     Unit unit;
 
-    Event(Unit unit, double t) {
+    internal Event(Unit unit, double t) {
         this.unit = unit;
         this.t = t;
         _t = t;
@@ -23,23 +24,23 @@ public abstract class Event {
 
     int getOutcome(){ return NONE; }
 
-    abstract ArrayList<Unit> onEventTime(double currentTime);
+    abstract List<Unit> onEventTime(double currentTime);
 
-    boolean useAcrossRounds() { return false; }
+    bool useAcrossRounds() { return false; }
 
-    abstract boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime);
+    abstract bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime);
 
-    protected boolean unitAlive(Unit unit, int outcome) {
+    protected bool unitAlive(Unit unit, int outcome) {
         return !unitDead(this.unit, unit, outcome);
     }
 
-    protected boolean unitStopped(Unit unit){
+    protected bool unitStopped(Unit unit){
         if(unit.isDead) return true;
         if(unit.stunTime>0) return true;
         return false;
     }
 
-    protected boolean unitStopped(Unit unit, Unit affected, int outcome){
+    protected bool unitStopped(Unit unit, Unit affected, int outcome){
         if(unit != affected) return false;
         if(unitDead(unit, affected, outcome)) return true;
         if(hasOutcome(outcome, STUNNED) && unit.stunTime > 0) return true;
@@ -47,34 +48,34 @@ public abstract class Event {
     }
 
     protected void setSpeedAndAlertChange(Unit unit, double vx, double vy){
-        Const.game.events.add(new SpeedChangedEvent(unit, 0.0, vx, vy));
+        Const.game.events.Add(new SpeedChangedEvent(unit, 0.0, vx, vy));
     }
 
-    protected boolean unitDead(Unit unit, Unit affected, int outcome){
+    protected bool unitDead(Unit unit, Unit affected, int outcome){
         if(unit != affected) return false;
         return unit.isDead;
     }
 
     protected void runSilentlyTowards(Unit unit, Point targetPoint){
-        if(Math.abs(unit.forceVY) > Const.EPSILON || Math.abs(unit.forceVX) > Const.EPSILON) return;
+        if(Math.Abs(unit.forceVY) > Const.EPSILON || Math.Abs(unit.forceVX) > Const.EPSILON) return;
         double targetDist = targetPoint.distance(unit);
         double coef = (((double) unit.moveSpeed)) / targetDist;
         unit.vx = (targetPoint.x - unit.x) * coef;
         unit.vy = (targetPoint.y - unit.y) * coef;
         unit.moving = true;
-        Const.viewController.addEffect(unit, targetPoint, "movement", 1.0);
+        //Const.viewController.addEffect(unit, targetPoint, "movement", 1.0);
     }
 
-    protected boolean hasAnyOutcome(int outcome, int expected1, int expected2){
+    protected bool hasAnyOutcome(int outcome, int expected1, int expected2){
         return hasOutcome(outcome, expected1) || hasOutcome(outcome, expected2);
     }
 
-    protected boolean hasOutcome(int outcome, int expectedOutcome){
+    protected bool hasOutcome(int outcome, int expectedOutcome){
         return (outcome & expectedOutcome) != 0;
     }
 
 
-    protected Unit getClosestUnitInRange(Point root, double range, int team, boolean allowInvis, Unit ignoredUnit){
+    protected Unit getClosestUnitInRange(Point root, double range, int team, bool allowInvis, Unit ignoredUnit){
         double closestDist = Const.MAXDOUBLE;
         Unit closest = null;
         for(Unit unit : Const.game.allUnits){
@@ -101,54 +102,52 @@ public abstract class Event {
         }
     }
 
-    protected ArrayList<Unit> createListOfUnit() {
-        ArrayList<Unit> units = new ArrayList<>();
+    protected List<Unit> createListOfUnit() {
+        List<Unit> units = new ArrayList<>();
         units.add(unit);
         return units;
     }
 
-    public static class OnLocationReachedEvent extends Event {
-        OnLocationReachedEvent(Unit unit, double t) {
-            super(unit, t);
+    public static class OnLocationReachedEvent : Event {
+        OnLocationReachedEvent(Unit unit, double t) :base(unit,t){
         }
 
-        @Override
-        int getOutcome() {
+        override int getOutcome() {
             return SPEEDCHANGED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.vx = unit.forceVX;
             unit.vy = unit.forceVY;
             unit.moving = false;
-            if(currentTime < 0.99)
-                Const.viewController.addEffect(unit, new Point(unit.x+unit.vx, unit.y+unit.vy), "default", 1.0);
+            //if(currentTime < 0.99)
+                //Const.viewController.addEffect(unit, new Point(unit.x+unit.vx, unit.y+unit.vy), "default", 1.0);
 
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return unitStopped(unit, affectedUnit, outcome) ;
         }
     }
 
-    public static class SpeedChangedForceEvent extends Event {
+    public static class SpeedChangedForceEvent : Event {
         double vx, vy;
-        SpeedChangedForceEvent(Unit unit, double t, double forcevx, double forcevy) {
-            super(unit, t);
+        SpeedChangedForceEvent(Unit unit, double t, double forcevx, double forcevy) : base(unit, t)
+        {
             this.vx = forcevx;
             this.vy = forcevy;
         }
 
-        @Override
+        override
         int getOutcome() {
             return SPEEDCHANGED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.forceVX += vx;
             unit.forceVY += vy;
             unit.vx = unit.forceVX;
@@ -157,44 +156,40 @@ public abstract class Event {
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return !unitAlive(affectedUnit, outcome);
         }
     }
 
-    public static class SpeedChangedEvent extends Event {
+    public static class SpeedChangedEvent : Event {
         double vx, vy;
 
-
-        SpeedChangedEvent(Unit unit, double t, double vx, double vy) {
-            super(unit, t);
+        SpeedChangedEvent(Unit unit, double t, double vx, double vy) : base(unit, t)
+        {
             this.vx = vx;
             this.vy = vy;
         }
 
-        @Override
-        int getOutcome() {
+        override int getOutcome() {
             return SPEEDCHANGED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
-            if(unit.stunTime > 0 || (Math.abs(unit.forceVY) > Const.EPSILON || Math.abs(unit.forceVX) > Const.EPSILON)) return EMPTYLIST;
+        override List<Unit> onEventTime(double currentTime) {
+            if(unit.stunTime > 0 || (Math.Abs(unit.forceVY) > Const.EPSILON || Math.Abs(unit.forceVX) > Const.EPSILON)) return EMPTYLIST;
             unit.vx = vx;
             unit.vy = vy;
 
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return !unitAlive(affectedUnit, outcome);
         }
     }
 
 
-    public static class DelayedAttackEvent extends Event {
+    public static class DelayedAttackEvent : Event {
         Unit attacker;
 
         DelayedAttackEvent(Unit unit, Unit attacker, double t) {
@@ -202,19 +197,19 @@ public abstract class Event {
             this.attacker = attacker;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             this.attacker.fireAttack(this.unit);
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return unitStopped(this.attacker) || unitDead(this.unit, affectedUnit, outcome) || (affectedUnit == unit && hasOutcome(outcome, TELEPORTED));
         }
     }
 
-    public static class DamageEvent extends Event {
+    public static class DamageEvent : Event {
         int damage;
         Unit attacker;
 
@@ -224,14 +219,14 @@ public abstract class Event {
             this.damage = damage;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             doDamage(unit, damage, attacker);
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             if(affectedUnit == this.unit && hasOutcome(outcome, TELEPORTED)){
                 return true;
             }
@@ -241,7 +236,7 @@ public abstract class Event {
     }
 
     // when hit throws a dagger on nearby enemy
-    public static class CounterEvent extends Event{
+    public static class CounterEvent : Event{
         int health, range;
         CounterEvent(Unit defender, double t, int range) {
             super(defender, t);
@@ -249,8 +244,8 @@ public abstract class Event {
             this.range = range;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             if(this.health > unit.health){
                 Unit closest = getClosestUnitInRange(this.unit, this.range, this.unit.team, true, this.unit);
                 int damage = (int)((this.health-unit.health)*1.5);
@@ -263,44 +258,44 @@ public abstract class Event {
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return !unitAlive(affectedUnit, outcome);
         }
     }
 
-    public static class StunEvent extends Event{
+    public static class StunEvent : Event{
         int stunTime;
         StunEvent(Unit unit, double t, int stunTime) {
             super(unit, t);
             this.stunTime = stunTime;
         }
 
-        @Override
-        boolean useAcrossRounds() { return true; }
+        override
+        bool useAcrossRounds() { return true; }
 
-        @Override
+        override
         int getOutcome() {
             return STUNNED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.stunTime = Math.max(unit.stunTime, stunTime);
-            Const.viewController.addEffect(unit, null, "stun", stunTime);
+            //Const.viewController.addEffect(unit, null, "stun", stunTime);
             unit.vx = unit.forceVX;
             unit.vy = unit.forceVY;
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return !unitAlive(affectedUnit, outcome);
         }
     }
 
 
-    public static class BlinkEvent extends Event{
+    public static class BlinkEvent : Event{
         double x,y;
         BlinkEvent(Unit unit, double t, double x, double y) {
             super(unit, t);
@@ -308,47 +303,47 @@ public abstract class Event {
             this.y = y;
         }
 
-        @Override
+        override
         int getOutcome() {
             return TELEPORTED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.move(x, y);
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return unitDead(this.unit, affectedUnit, outcome);
         }
     }
 
-    public static class AttackNearestDelayed extends Event{
+    public static class AttackNearestDelayed : Event{
         AttackNearestDelayed( Hero hero, double t){
             super(hero, t);
         }
 
-        @Override
+        override
         int getOutcome() {
             return NONE;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             Unit toHit = getClosestUnitInRange(this.unit, this.unit.range, this.unit.team, false, this.unit);
             if(toHit != null) this.unit.fireAttack(toHit);
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return unitStopped(this.unit, affectedUnit, outcome);
         }
     }
 
-    public static class PowerUpEvent extends Event{
+    public static class PowerUpEvent : Event{
         int x,y, moveSpeed, range, damage, rounds;
         PowerUpEvent(Unit unit, int moveSpeed, int range, int damage, int rounds) {
             super(unit, Const.MAXINT);
@@ -358,8 +353,8 @@ public abstract class Event {
             this.rounds = rounds;
         }
 
-        @Override
-        boolean useAcrossRounds() {
+        override
+        bool useAcrossRounds() {
             rounds--;
             if(rounds <= 0) {
                 onEventTime(0);
@@ -368,26 +363,26 @@ public abstract class Event {
             return true;
         }
 
-        @Override
+        override
         int getOutcome() {
             return NONE;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.moveSpeed -= moveSpeed;
             unit.range -= range;
             unit.damage -= damage;
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return unitDead(unit, affectedUnit, outcome);
         }
     }
 
-    public static class StealthEvent extends Event{
+    public static class StealthEvent : Event{
         int x,y;
         double mana;
         StealthEvent(Unit unit, double t, double mana) {
@@ -395,32 +390,32 @@ public abstract class Event {
             this.mana = mana;
         }
 
-        @Override
-        boolean useAcrossRounds() { return !unit.visible; }
+        override
+        bool useAcrossRounds() { return !unit.visible; }
 
-        @Override
+        override
         int getOutcome() {
             return NONE;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.invisibleBySkill = false;
             unit.visible = true;
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return !unitAlive(affectedUnit, outcome);
         }
     }
 
-    public static class HealthChangeEvent extends Event{
+    public static class HealthChangeEvent : Event{
         int  dHealth, range;
         Point targetPos;
-        boolean hitEnemies;
-        HealthChangeEvent(Point targetPos, double t, int range, int dHealth, boolean hitEnemies, Unit user) {
+        bool hitEnemies;
+        HealthChangeEvent(Point targetPos, double t, int range, int dHealth, bool hitEnemies, Unit user) {
             super(user, t);
             this.range = range;
             this.targetPos = targetPos;
@@ -428,8 +423,8 @@ public abstract class Event {
             this.hitEnemies = hitEnemies;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             for(int i = Const.game.allUnits.size()-1; i >= 0; i--){
                 Unit target = Const.game.allUnits.get(i);
                 if(unit.team == target.team && hitEnemies) continue;
@@ -445,76 +440,76 @@ public abstract class Event {
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return false;
         }
     }
 
-    public static class ShieldEvent extends Event{
+    public static class ShieldEvent : Event{
         int rounds;
         ShieldEvent(Unit unit, int t) {
             super(unit, t+1); // avoid rounding errors.
             rounds = t;
         }
 
-        @Override
-        boolean useAcrossRounds() {
+        override
+        bool useAcrossRounds() {
             rounds--;
             if(rounds<=0){
                 unit.shield = 0;
-                Const.viewController.addEffect(unit, unit, "shield", 0);
+                //Const.viewController.addEffect(unit, unit, "shield", 0);
                 return false;
             }
 
             return true;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.shield = 0;
-            Const.viewController.addEffect(unit, unit, "shield", 0);
+            //Const.viewController.addEffect(unit, unit, "shield", 0);
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return affectedUnit==this.unit && affectedUnit.shield <= 0;
         }
     }
 
-    public static class ExplosiveShieldEvent extends Event{
+    public static class ExplosiveShieldEvent : Event{
         int rounds;
         ExplosiveShieldEvent(Unit unit, int t) {
             super(unit, t+1);
             rounds = t;
         }
 
-        @Override
-        boolean useAcrossRounds() {
+        override
+        bool useAcrossRounds() {
             rounds--;
             if(rounds<=0){
                 unit.explosiveShield = 0;
-                Const.viewController.addEffect(unit, unit, "shield", 0);
+                //Const.viewController.addEffect(unit, unit, "shield", 0);
                 return false;
             }
 
             return true;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             unit.explosiveShield = 0;
-            Const.viewController.addEffect(unit, unit, "shield", 0);
+            //Const.viewController.addEffect(unit, unit, "shield", 0);
 
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             if(affectedUnit == this.unit && this.unit.explosiveShield <= 0){
-                Const.game.events.add(new Event.ExplosionEvent(affectedUnit, 0, this.unit.x, this.unit.y));
-                Const.viewController.addEffect(unit, null, "shieldexplosion", 0);
+                Const.game.events.Add(new Event.ExplosionEvent(affectedUnit, 0, this.unit.x, this.unit.y));
+                //Const.viewController.addEffect(unit, null, "shieldexplosion", 0);
 
                 return true;
             }
@@ -523,7 +518,7 @@ public abstract class Event {
         }
     }
 
-    public static class ExplosionEvent extends Event{
+    public static class ExplosionEvent : Event{
         double x,y;
         ExplosionEvent(Unit unit, double t, double x, double y) {
             super(unit, t);
@@ -531,8 +526,8 @@ public abstract class Event {
             this.y = y;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             for(Unit target : Const.game.allUnits){
                 if(target instanceof Tower || unit.team == target.team) continue;
 
@@ -544,13 +539,13 @@ public abstract class Event {
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return false;
         }
     }
 
-    public static class DrainManaEvent extends Event{
+    public static class DrainManaEvent : Event{
         Hero attacker;
         int manaToDrain;
         DrainManaEvent(Unit unit, double t, int manaToDrain, Hero attacker){
@@ -559,8 +554,8 @@ public abstract class Event {
             this.attacker = attacker;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             if(unit.isDead) return EMPTYLIST;
 
             //If attack is dead mana is still drained since spell would be in motion.
@@ -572,14 +567,14 @@ public abstract class Event {
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             return false;
         }
 
     }
 
-    public static class LineEffectEvent extends Event{
+    public static class LineEffectEvent : Event{
         MovingEntity movingSpell;
         Hero attacker;
         int damage, damageByTime;
@@ -595,13 +590,13 @@ public abstract class Event {
             this.damageByTime = damageByTime;
         }
 
-        @Override
+        override
         int getOutcome() {
             return NONE;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             movingSpell.moveIgnoreEdges(currentTime);
             double dist2 = movingSpell.distance2(unit);
             double compareDist = Math.pow(radius, 2);
@@ -613,8 +608,8 @@ public abstract class Event {
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             if(currentTime > duration || !unitAlive(affectedUnit, outcome)) return true;
 
             if(affectedUnit == this.unit && hasAnyOutcome(outcome, SPEEDCHANGED, TELEPORTED)){
@@ -630,7 +625,7 @@ public abstract class Event {
         }
     }
 
-    public static class WireEvent extends Event{
+    public static class WireEvent : Event{
         MovingEntity movingSpell;
         Hero attacker;
         int stun_time;
@@ -648,13 +643,13 @@ public abstract class Event {
             this.potentialTargets = potentialTargets;
         }
 
-        @Override
+        override
         int getOutcome() {
             return STUNNED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             movingSpell.moveIgnoreEdges(currentTime);
             if(currentTime <= duration ){
                 Hero closest = null;
@@ -669,7 +664,7 @@ public abstract class Event {
                 }
 
                 if(closest!= null) {
-                    Const.game.events.add(new StunEvent(closest, 0, 2));
+                    Const.game.events.Add(new StunEvent(closest, 0, 2));
                     doDamage(closest, (int)(closest.maxMana*dmgMultiplier), attacker);
                     return createListOfUnit();
                 }
@@ -678,8 +673,8 @@ public abstract class Event {
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
           if (affectedUnit == null) {
               return false;
           }
@@ -705,7 +700,7 @@ public abstract class Event {
         }
     }
 
-    public static class AttackMoveEvent extends Event{
+    public static class AttackMoveEvent : Event{
         Point targetPos;
         AttackMoveEvent(Unit unit, Point targetPos) {
             super(unit, 1.0);
@@ -716,13 +711,13 @@ public abstract class Event {
             recalculate( null);
         }
 
-        @Override
+        override
         int getOutcome() {
             return SPEEDCHANGED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
 
             Unit closest = this.unit.findClosestOnOtherTeam();
             if(unit.canAttack(closest)){
@@ -741,8 +736,8 @@ public abstract class Event {
             return EMPTYLIST;
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             if(unitStopped(this.unit, affectedUnit, outcome)){
                 return true;
             }
@@ -774,7 +769,7 @@ public abstract class Event {
         }
     }
 
-    public static class AttackMoveUnitEvent extends Event{
+    public static class AttackMoveUnitEvent : Event{
         Unit nextTarget;
         AttackMoveUnitEvent(Unit unit, Unit targetUnit) {
             super(unit, Utilities.timeToReachTarget(unit, targetUnit, unit.moveSpeed));
@@ -782,17 +777,17 @@ public abstract class Event {
             recalculate(true);
         }
 
-        @Override
+        override
         int getOutcome() {
             return SPEEDCHANGED;
         }
 
-        @Override
-        ArrayList<Unit> onEventTime(double currentTime) {
+        override
+        List<Unit> onEventTime(double currentTime) {
             this.unit.vx = unit.forceVX;
             this.unit.vy = unit.forceVY;
-            if(currentTime < 0.99)
-                Const.viewController.addEffect(unit, new Point(unit.x+unit.vx, unit.y+unit.vy), "default", 1.0);
+            //if(currentTime < 0.99)
+                //Const.viewController.addEffect(unit, new Point(unit.x+unit.vx, unit.y+unit.vy), "default", 1.0);
 
             if(nextTarget.isDead || unitStopped(unit)){
                 return createListOfUnit();
@@ -802,8 +797,8 @@ public abstract class Event {
             return createListOfUnit();
         }
 
-        @Override
-        boolean afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
+        override
+        bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime) {
             if(this.unit != affectedUnit && this.nextTarget != affectedUnit) return false;
             if(unitStopped(this.unit, affectedUnit, outcome)) {
                 t = 0.0;
@@ -818,7 +813,7 @@ public abstract class Event {
             return false;
         }
 
-        void recalculate(boolean run){
+        void recalculate(bool run){
             double prevVx = this.unit.vx;
             double prevVy = this.unit.vy;
 
@@ -832,9 +827,10 @@ public abstract class Event {
                 else t = timeToTarget;
             }
 
-            if(Math.abs(this.unit.vx-prevVx) > Const.EPSILON || Math.abs(this.unit.vy-prevVy) > Const.EPSILON){
-                Const.game.events.add(new SpeedChangedEvent(this.unit, 0.0, this.unit.vx, this.unit.vy)); //Alert speed changed
+            if(Math.Abs(this.unit.vx-prevVx) > Const.EPSILON || Math.Abs(this.unit.vy-prevVy) > Const.EPSILON){
+                Const.game.events.Add(new SpeedChangedEvent(this.unit, 0.0, this.unit.vx, this.unit.vy)); //Alert speed changed
             }
         }
     }
+}
 }

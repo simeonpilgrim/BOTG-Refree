@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 public class Utilities {
 
-    public static boolean isNumber(String s){
+    public static bool isNumber(String s){
         try
         {
             double d = Double.parseDouble(s);

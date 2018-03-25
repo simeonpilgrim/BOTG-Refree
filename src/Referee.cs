@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 
 import tooltipModule.TooltipModule;
 
-public class Referee extends AbstractReferee {
+public class Referee : AbstractReferee {
     @Inject private GameManager<Player> gameManager;
     @Inject private GraphicEntityModule entityManager;
     @Inject private TooltipModule tooltipModule;
@@ -71,7 +71,7 @@ public class Referee extends AbstractReferee {
     }
 
 
-    @Override
+    override
     public Properties init(Properties params) {
         long seed = 42;
         try{
@@ -95,7 +95,7 @@ public class Referee extends AbstractReferee {
         return params;
     }
 
-    @Override
+    override
     public void gameTurn(int turn) {
         Const.game.beforeTurn(turn, gameManager.getActivePlayers());
         Const.viewController.initRound(turn);
@@ -103,10 +103,10 @@ public class Referee extends AbstractReferee {
         if(turn == 0) sendInitialData();
 
         for (Player player : gameManager.getPlayers()) {
-            player.sendInputLine(String.format("%d", player.getGold()));
-            player.sendInputLine(String.format("%d", getOther(player).getGold()));
-            player.sendInputLine(String.format("%d", turn >= Const.HEROCOUNT ? player.heroes.stream().filter(h -> !h.isDead).count() : (turn - Const.HEROCOUNT)));
-            player.sendInputLine(String.format("%d", (Const.game.allUnits.stream().filter(u -> shouldSendToPlayer(player, u)).count())));
+            player.sendInputLine(string.format("%d", player.getGold()));
+            player.sendInputLine(string.format("%d", getOther(player).getGold()));
+            player.sendInputLine(string.format("%d", turn >= Const.HEROCOUNT ? player.heroes.stream().filter(h -> !h.isDead).count() : (turn - Const.HEROCOUNT)));
+            player.sendInputLine(string.format("%d", (Const.game.allUnits.stream().filter(u -> shouldSendToPlayer(player, u)).count())));
 
             for (Unit unit : Const.game.allUnits) {
                 if (shouldSendToPlayer(player, unit)) {
@@ -117,7 +117,7 @@ public class Referee extends AbstractReferee {
 
         for (Player player : gameManager.getPlayers ()) {
             player.execute();
-            String[] strinOutputs = new String[0];
+            string[] strinOutputs = new string[0];
             if (turn < Const.HEROCOUNT) {
                 gameManager.setFrameDuration(100);
                 pickHero(player);
@@ -125,7 +125,7 @@ public class Referee extends AbstractReferee {
                 gameManager.setFrameDuration(1000);
                 try {
                     Object[] outputs = player.getOutputs().toArray();
-                    strinOutputs = Arrays.copyOf(outputs, outputs.length, String[].class);
+                    strinOutputs = Arrays.copyOf(outputs, outputs.length, string[].class);
                     player.handlePlayerOutputs(strinOutputs);
                 } catch (AbstractPlayer.TimeoutException e) {
                     player.setScore(LostScore);
@@ -146,7 +146,7 @@ public class Referee extends AbstractReferee {
 
         for (Player player : gameManager.getActivePlayers()) {
             player.setScore(0);
-            boolean deadHeroes = player.heroes.stream().allMatch(h -> h.isDead);
+            bool deadHeroes = player.heroes.stream().allMatch(h -> h.isDead);
             if ( deadHeroes || player.tower.isDead) {
                 player.setScore(LostScore);
                 player.deactivate(player.getNicknameToken() +  " lost. " + (deadHeroes ? "All heroes dead" : "Tower destroyed"));
@@ -170,13 +170,13 @@ public class Referee extends AbstractReferee {
         if (gameManager.getActivePlayers().size() < 2 ) {
             gameManager.endGame();
         }else{
-            for(String msg : Const.viewController.summaries) {
+            for(string msg : Const.viewController.summaries) {
                 gameManager.addToGameSummary(msg);
             }
         }
     }
 
-    private boolean shouldSendToPlayer(Player player, Unit u){
+    private bool shouldSendToPlayer(Player player, Unit u){
         return !u.isDead && (u.team == player.getIndex() || u.visible || u.becomingInvis || !(u instanceof Hero));
     }
 
@@ -186,7 +186,7 @@ public class Referee extends AbstractReferee {
 
     private void pickHero(Player player)
     {
-        String output = "";
+        string output = "";
         try {
             Point spawn = player.getIndex() == 0 ? (player.heroes.size() == 0 ? Const.HEROSPAWNTEAM0 : Const.HEROSPAWNTEAM0HERO2) : (player.heroes.size() == 0 ? Const.HEROSPAWNTEAM1 : Const.HEROSPAWNTEAM1HERO2);
             output = player.getOutputs().get(0);
@@ -209,16 +209,16 @@ public class Referee extends AbstractReferee {
             gameManager.addToGameSummary(player.getNicknameToken() + " supplied an invalid hero name: " + output);
         } catch (Exception e){
             player.setScore(LostScore);
-            String errorMessage = e.getMessage();
+            string errorMessage = e.getMessage();
             player.deactivate(player.getNicknameToken() + " supplied invalid input. " + errorMessage);
         }
     }
 
     private void sendInitialData(){
         for(Player player : gameManager.getActivePlayers()){
-            player.sendInputLine(String.format("%d", player.getIndex()));
+            player.sendInputLine(string.format("%d", player.getIndex()));
 
-            player.sendInputLine(String.format("%d", Const.game.bushes.size() + Const.game.spawns.length));
+            player.sendInputLine(string.format("%d", Const.game.bushes.size() + Const.game.spawns.length));
             for (Bush bush : Const.game.bushes) {
                 player.sendInputLine(bush.getPlayerString());
             }
@@ -228,8 +228,8 @@ public class Referee extends AbstractReferee {
             }
 
             //ITEMS
-            player.sendInputLine(String.format("%d", Const.game.items.size()));
-            for(String itemName : Const.game.items.keySet()){
+            player.sendInputLine(string.format("%d", Const.game.items.size()));
+            for(string itemName : Const.game.items.keySet()){
                 Item item = Const.game.items.get(itemName);
                 player.sendInputLine(item.getPlayerString());
             }

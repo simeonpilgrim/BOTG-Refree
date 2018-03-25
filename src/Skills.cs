@@ -1,24 +1,26 @@
-package com.codingame.game;
+using System;
+using System.Collections.Generic;
 
-import sun.font.CreatedFontTracker;
-
-import java.util.ArrayList;
-
-
-
-public class Skills {
+namespace BOTG_Refree
+{
+    public enum SkillType
+{
+    SELF, UNIT, POSITION
+}
 
     //Skill is something the hero uses
-    public static abstract class SkillBase {
-        public final Hero hero;
-        public final int manaCost;
-        public final String skillName;
-        public final int range;
+    public static abstract class SkillBase
+    {
+        public readonly Hero hero;
+        public readonly int manaCost;
+        public readonly string skillName;
+        public readonly int range;
         public int cooldown;
         public int initialCooldown;
         public double duration = 1;
 
-        SkillBase(Hero hero, int manaCost, String skillName, int range, int cooldown) {
+        SkillBase(Hero hero, int manaCost, string skillName, int range, int cooldown)
+        {
             this.hero = hero;
             this.manaCost = manaCost;
             this.skillName = skillName;
@@ -30,73 +32,69 @@ public class Skills {
         public abstract double CastTime();
         abstract void doSkill(Game game, double x, double y, int unitId);
 
-        public int getDuration(){return (duration<1?1:(int)(Math.round(duration))); }
-        public abstract String getTargetTeam();
+        public int getDuration() { return (duration < 1 ? 1 : (int)(Math.Round(duration))); }
+        public abstract string getTargetTeam();
         public abstract SkillType getTargetType();
-
     }
 
-    static class EmptySkill extends SkillBase{
-        EmptySkill() { super(null, 100000, "NONE", 0, Const.Rounds+1); }
-        @Override
-        void doSkill(Game game, double x, double y, int unitId) { }
+    public class Skills {
 
-        @Override
-        public String getTargetTeam() {
-            return "NONE";
-        }
 
-        @Override
-        public SkillType getTargetType() { return SkillType.SELF; }
-        @Override
-        public double CastTime(){return 0.0;}
-    }
 
-    static class BlinkSkill extends SkillBase{
-        boolean instant;
-        BlinkSkill(Hero hero, int manaCost, String skillName, double duration, boolean instant, int range, int cooldown) {
-            super(hero, manaCost, skillName, range, cooldown);
-            this.duration = duration;
-            this.instant = instant;
-        }
+        static class EmptySkill : SkillBase {
+            EmptySkill() : base(null, 100000, "NONE", 0, Const.Rounds + 1) { }
 
-        @Override
-        void doSkill(Game game, double x, double y, int unitId) {
-            Point target = new Point(x,y);
-            if(target.distance(hero) > range){
-                double distance = target.distance(hero);
-                target.x = hero.x + ((target.x-hero.x) / distance * range);
-                target.y = hero.y + ((target.y-hero.y) / distance * range);
+            override void doSkill(Game game, double x, double y, int unitId) { }
+
+            override public string getTargetTeam() {
+                return "NONE";
             }
 
-            hero.mana = Math.min(hero.mana+20, hero.maxMana);
-
-            game.events.add(new Event.BlinkEvent(hero, duration, Utilities.round(target.x), Utilities.round(target.y)));
-            Const.viewController.addEffect(hero, target, "blink", duration);
+            override public SkillType getTargetType() { return SkillType.SELF; }
+            override public double CastTime() { return 0.0; }
         }
 
-        @Override
-        public double CastTime(){return duration;}
+        static class BlinkSkill : SkillBase {
+            bool instant;
+            BlinkSkill(Hero hero, int manaCost, string skillName, double duration, bool instant, int range, int cooldown) : base(hero, manaCost, skillName, range, cooldown)
+            {
+                this.duration = duration;
+                this.instant = instant;
+            }
 
-        @Override
-        public String getTargetTeam() {
-            return "NONE";
-        }
+            override void doSkill(Game game, double x, double y, int unitId) {
+                Point target = new Point(x, y);
+                if (target.distance(hero) > range) {
+                    double distance = target.distance(hero);
+                    target.x = hero.x + ((target.x - hero.x) / distance * range);
+                    target.y = hero.y + ((target.y - hero.y) / distance * range);
+                }
 
-        @Override
-        public SkillType getTargetType() {
-            return SkillType.POSITION;
+                hero.mana = Math.min(hero.mana + 20, hero.maxMana);
+
+                game.events.add(new Event.BlinkEvent(hero, duration, Utilities.round(target.x), Utilities.round(target.y)));
+                Const.viewController.addEffect(hero, target, "blink", duration);
+            }
+
+            override public double CastTime() { return duration; }
+
+            override public string getTargetTeam() {
+                return "NONE";
+            }
+
+            override public SkillType getTargetType() {
+                return SkillType.POSITION;
+            }
         }
-    }
 
     // Lancer skills
-    static class JumpSkill extends SkillBase{
-        JumpSkill(Hero hero, int manaCost, String skillName, double duration, int range, int cooldown) {
-            super(hero, manaCost, skillName, range, cooldown);
-            this.duration = duration;
-        }
+    static class JumpSkill : SkillBase{
+            JumpSkill(Hero hero, int manaCost, string skillName, double duration, int range, int cooldown) : base(hero, manaCost, skillName, range, cooldown)
+            {
+                this.duration = duration;
+            }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Point target = new Point(x,y);
             double distance = target.distance(hero);
@@ -110,27 +108,27 @@ public class Skills {
            // Const.viewController.addEffect(hero, target, "jump", duration);
         }
 
-        @Override
+        override
         public double CastTime(){return duration;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return  SkillType.POSITION;
         }
     }
 
-    static class FlipSkill extends SkillBase{
-        FlipSkill(Hero hero, int manaCost, String skillName, double duration, int range, int cooldown) {
+    static class FlipSkill : SkillBase{
+        FlipSkill(Hero hero, int manaCost, string skillName, double duration, int range, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Unit target = Const.game.getUnitOfId(unitId);
             if(target.distance(hero) <= range && !(target instanceof Tower)){
@@ -144,27 +142,27 @@ public class Skills {
                 game.events.add(new Event.SpeedChangedForceEvent(target, duration, vx*-1, vy*-1));
             } else Const.viewController.addSummary("Can't flip target outside range.");
         }
-        @Override
+        override
         public double CastTime(){return 0.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "BOTH";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.UNIT;
         }
     }
 
-    static class PowerUpSkill extends SkillBase{
-        PowerUpSkill(Hero hero, int manaCost, String skillName, double duration, int range, int cooldown) {
+    static class PowerUpSkill : SkillBase{
+        PowerUpSkill(Hero hero, int manaCost, string skillName, double duration, int range, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             int dmgIncrease = (int)(hero.moveSpeed*Const.POWERUPDAMAGEINCREASE);
             hero.moveSpeed += 0;
@@ -173,15 +171,15 @@ public class Skills {
             game.events.add(new Event.PowerUpEvent(hero, 0, 10, dmgIncrease, (int)duration));
             Const.viewController.addEffect(hero, null, "powerup", duration);
         }
-        @Override
+        override
         public double CastTime(){return 0.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "NONE";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.SELF;
         }
@@ -189,18 +187,18 @@ public class Skills {
     // Lancer skills end
 
     // AOE health Skills
-    static class AOEHealSkill extends SkillBase{
-        private String skin;
+    static class AOEHealSkill : SkillBase{
+        private string skin;
         int radius;
 
-        AOEHealSkill(Hero hero, int manaCost, String skillName, double duration, int range, int radius, String skin, int cooldown) {
+        AOEHealSkill(Hero hero, int manaCost, string skillName, double duration, int range, int radius, string skin, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
             this.radius = radius;
             this.skin = skin;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Point target = new Point(x,y);
             if(target.distance(hero) <= range){
@@ -208,33 +206,33 @@ public class Skills {
                 Const.viewController.addEffect(hero, target, "heal", duration);
             }else Const.viewController.addSummary("Can't heal outside range.");
         }
-        @Override
+        override
         public double CastTime(){return duration;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ALLIED";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.POSITION;
         }
     }
 
 
-    static class BurningGround extends SkillBase{
-        private String skin;
+    static class BurningGround : SkillBase{
+        private string skin;
         int radius;
 
-        BurningGround(Hero hero, int manaCost, String skillName, double duration, int range, int radius, String skin, int cooldown) {
+        BurningGround(Hero hero, int manaCost, string skillName, double duration, int range, int radius, string skin, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
             this.radius = radius;
             this.skin = skin;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Point target = new Point(x,y);
             if(target.distance(hero) <= range+Const.EPSILON){
@@ -242,28 +240,28 @@ public class Skills {
                 Const.viewController.addEffect(hero, target, "burning", duration);
             } else Const.viewController.addSummary("Can't burn ground outside range.");
         }
-        @Override
+        override
         public double CastTime(){return duration;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.POSITION;
         }
     }
 
 
-    static class ShieldSkill extends SkillBase{
-        ShieldSkill(Hero hero, int manaCost, String skillName, int duration, int range, int cooldown) {
+    static class ShieldSkill : SkillBase{
+        ShieldSkill(Hero hero, int manaCost, string skillName, int duration, int range, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Unit target = Const.game.getUnitOfId(unitId);
             if(target.distance(hero) <= range){
@@ -273,29 +271,29 @@ public class Skills {
             } else Const.viewController.addSummary("Can't shield hero outside range");
         }
 
-        @Override
+        override
         public double CastTime(){return 0.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ALLIED";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.UNIT;
         }
     }
 
-    static class PullSkill extends SkillBase{
+    static class PullSkill : SkillBase{
         double delay;
-        PullSkill(Hero hero, int manaCost, String skillName, double duration, int range, int cooldown, double delay) {
+        PullSkill(Hero hero, int manaCost, string skillName, double duration, int range, int cooldown, double delay) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
             this.delay = delay;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Unit unit = Const.game.getUnitOfId(unitId);
             double distance =unit.distance(hero);
@@ -313,15 +311,15 @@ public class Skills {
 
             }else Const.viewController.addSummary("Can't pull target outside range.");
         }
-        @Override
+        override
         public double CastTime(){return delay;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "BOTH";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.UNIT;
         }
@@ -329,13 +327,13 @@ public class Skills {
     // DR STRANGE skills end
 
     // HULK Skills
-    static class ChargeSkill extends SkillBase{
-        ChargeSkill(Hero hero, int manaCost, String skillName, double duration, int range, int cooldown) {
+    static class ChargeSkill : SkillBase{
+        ChargeSkill(Hero hero, int manaCost, string skillName, double duration, int range, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Unit target = Const.game.getUnitOfId(unitId);
             double distance = target.distance(hero);
@@ -355,27 +353,27 @@ public class Skills {
                 }
             }else Const.viewController.addSummary("Can't charge further than range.");
         }
-        @Override
+        override
         public double CastTime(){return duration;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.UNIT;
         }
     }
 
-    static class BashSkill extends SkillBase{
-        BashSkill(Hero hero, int manaCost, String skillName, int duration, int range, int cooldown) {
+    static class BashSkill : SkillBase{
+        BashSkill(Hero hero, int manaCost, string skillName, int duration, int range, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Unit target = Const.game.getUnitOfId(unitId);
             if(target.distance(hero) <= range && !(target instanceof Tower)){
@@ -383,41 +381,41 @@ public class Skills {
                 game.events.add(new Event.StunEvent(target, hero.attackTime, (int)duration));
             }else Const.viewController.addSummary("Can't bash unit outside range.");
         }
-        @Override
+        override
         public double CastTime(){return hero.attackTime;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public  SkillType getTargetType() {
             return SkillType.UNIT;
         }
     }
 
-    static class ExplosiveSkill extends SkillBase{
-        ExplosiveSkill(Hero hero, int manaCost, String skillName, double duration, int range, int cooldown) {
+    static class ExplosiveSkill : SkillBase{
+        ExplosiveSkill(Hero hero, int manaCost, string skillName, double duration, int range, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             hero.explosiveShield=(int)(hero.maxHealth*0.07 + 50);
             game.events.add(new Event.ExplosiveShieldEvent(hero, (int)Math.round(duration)));
             Const.viewController.addEffect(hero, hero, "shield", duration);
         }
-        @Override
+        override
         public double CastTime(){return 0.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.SELF;
         }
@@ -425,66 +423,66 @@ public class Skills {
     // Knight Skills end
 
     // Ninja Skills
-    static class CounterSkill extends SkillBase{
-        CounterSkill(Hero hero, int manaCost, String skillName, int duration, int range, int cooldown) {
+    static class CounterSkill : SkillBase{
+        CounterSkill(Hero hero, int manaCost, string skillName, int duration, int range, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             game.events.add(new Event.CounterEvent(hero, duration-Const.EPSILON, range));
             Const.viewController.addEffect(hero, null, "counter", duration);
         }
-        @Override
+        override
         public double CastTime(){return 0.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.SELF;
         }
     }
 
-    static class StealthSkill extends SkillBase{
-        StealthSkill(Hero hero, int manaCost, String skillName, double range, double duration, int cooldown) {
+    static class StealthSkill : SkillBase{
+        StealthSkill(Hero hero, int manaCost, string skillName, double range, double duration, int cooldown) {
             super(hero, manaCost, skillName, 0, cooldown);
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             hero.invisibleBySkill = true;
             game.events.add(new Event.StealthEvent(hero, duration, hero.mana));
             hero.runTowards(new Point(x, y), hero.moveSpeed);
             Const.viewController.addEffect(hero, null, "invis", duration);
         }
-        @Override
+        override
         public double CastTime(){return 1.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "NONE";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.POSITION;
         }
     }
 
-    static class WireHookSkill extends SkillBase{
+    static class WireHookSkill : SkillBase{
         double radius;
         int stun_time;
         double speed;
         double flyTime;
 
 
-        WireHookSkill(Hero hero, int manaCost, String skillName, int range, int radius, int stun_time, double duration, int cooldown) {
+        WireHookSkill(Hero hero, int manaCost, string skillName, int range, int radius, int stun_time, double duration, int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.stun_time = stun_time;
             this.speed = range/duration;
@@ -493,7 +491,7 @@ public class Skills {
             this.duration = stun_time;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Point target = new Point(x,y);
             double distance = hero.distance(target);
@@ -516,36 +514,36 @@ public class Skills {
                 }
             }
 
-            Const.game.events.add(new Event.WireEvent(possibleTargets, lowestT, lineSpellUnit, stun_time, hero, radius, duration, 0.5));
+            Const.game.events.Add(new Event.WireEvent(possibleTargets, lowestT, lineSpellUnit, stun_time, hero, radius, duration, 0.5));
         }
-        @Override
+        override
         public double CastTime(){return 0.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.POSITION;
         }
     }
     // Ninja Skills end
 
-    static class LineSkill extends SkillBase{
+    static class LineSkill : SkillBase{
         double radius;
         double speed;
 
 
-        LineSkill(Hero hero, int manaCost, String skillName, int range, int radius, double duration,  int cooldown) {
+        LineSkill(Hero hero, int manaCost, string skillName, int range, int radius, double duration,  int cooldown) {
             super(hero, manaCost, skillName, range, cooldown);
             this.speed = range/duration;
             this.radius = radius;
             this.duration = duration;
         }
 
-        @Override
+        override
         void doSkill(Game game, double x, double y, int unitId) {
             Point target = new Point(x,y);
             double distance = hero.distance(target);
@@ -561,21 +559,22 @@ public class Skills {
             for(Unit unit : Const.game.allUnits){
                 if(unit.team != hero.team && (unit instanceof Hero || unit instanceof Creature)){
                     double collisionT = Utilities.getCollisionTime(lineSpellUnit, unit, radius-Const.EPSILON);
-                    Const.game.events.add(new Event.LineEffectEvent(unit, collisionT < 0 ? duration : collisionT, lineSpellUnit, (int)(0.2*(hero.mana+manaCost)), hero, radius, duration, 55));
+                    Const.game.events.Add(new Event.LineEffectEvent(unit, collisionT < 0 ? duration : collisionT, lineSpellUnit, (int)(0.2*(hero.mana+manaCost)), hero, radius, duration, 55));
                 }
             }
         }
-        @Override
+        override
         public double CastTime(){return 0.0;}
 
-        @Override
-        public String getTargetTeam() {
+        override
+        public string getTargetTeam() {
             return "ENEMY";
         }
 
-        @Override
+        override
         public SkillType getTargetType() {
             return SkillType.POSITION;
         }
     }
+}
 }
