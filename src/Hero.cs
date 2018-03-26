@@ -6,7 +6,7 @@ namespace BOTG_Refree
 
     public class Hero : Unit {
 
-        public Skills.SkillBase[] skills = new Skills.SkillBase[Const.SKILLCOUNT];
+        public SkillBase[] skills = new SkillBase[Const.SKILLCOUNT];
         public string heroType;
         public int mana;
         public int manaregeneration;
@@ -23,14 +23,14 @@ namespace BOTG_Refree
             this.channeling = 0;
         }
 
-        override void afterRound() {
+        internal void afterRound() {
             base.afterRound();
-            visibilityTimer = Math.max(0, visibilityTimer - 1);
+            visibilityTimer = Math.Max(0, visibilityTimer - 1);
             mana += manaregeneration;
             if (mana > maxMana) mana = maxMana;
-            for (Skills.SkillBase skill : skills) {
+            foreach(SkillBase skill in skills) {
                 if (skill == null) continue;
-                skill.cooldown = Math.max(0, skill.cooldown - 1);
+                skill.cooldown = Math.Max(0, skill.cooldown - 1);
             }
         }
 
@@ -52,9 +52,9 @@ namespace BOTG_Refree
         }
 
         void addCharacteristics(Item item, int amplitude) {
-            Map<string, Integer> characteristics = item.stats;
-            Class <?> c = this.getClass();
-            characteristics.forEach((k, v) -> {
+            var characteristics = item.stats;
+            var c = this.getClass();
+            characteristics.ForEach((k, v) => {
                 try {
                     Field f = c.getDeclaredField(k);
                     f.set(this, f.getInt(this) + v * amplitude);
@@ -62,8 +62,8 @@ namespace BOTG_Refree
                 }
             });
 
-            Class <?> c2 = this.getClass().getSuperclass();
-            characteristics.forEach((k, v) -> {
+            var c2 = this.getClass().getSuperclass();
+            characteristics.forEach((k, v) => {
                 try {
                     Field f = c2.getDeclaredField(k);
                     f.set(this, f.getInt(this) + v * amplitude);

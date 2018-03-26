@@ -64,7 +64,6 @@
     <Compile Include="Skills.cs" />
     <Compile Include="Tower.cs" />
     <Compile Include="Unit.cs" />
-    <Compile Include="UnitKilledState.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="ViewController.cs" />
   </ItemGroup>

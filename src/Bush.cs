@@ -3,8 +3,8 @@ namespace BOTG_Refree
 {
     public class Bush : Point
     {
-        double radius;
-        string skin;
+        internal double radius;
+        //string skin;
         public Bush(double x, double y) : base(x, y)
         {
             this.radius = Const.BUSHRADIUS;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BOTG_Refree
 {
@@ -22,7 +23,7 @@ namespace BOTG_Refree
         }
 
 
-        void findAction(List<Unit> allUnits) {
+        internal void findAction(List<Unit> allUnits) {
             if (isDead || stunTime > 0) return;
             if (this.state == CreatureState.aggressive) {
                 aggressiveBehavior(allUnits);
@@ -32,14 +33,13 @@ namespace BOTG_Refree
         }
 
         void aggressiveBehavior(List<Unit> allUnits) {
-            Unit attacker = allUnits.stream()
-                    .filter(u->u instanceof Hero)
-                    .sorted((u1, u2) ->u1.Distance2(this) < u2.Distance2(this) ? -1 : 1)
-                    .findFirst()
-                    .get();
-            Point target = attacker;
+            Unit attacker = allUnits
+                    .Where(u => u is Hero)
+                    .OrderBy(u => this.Distance2(u))
+                    .First();
+            Unit target = attacker;
             if (Distance2(camp) < Const.AGGROUNITRANGE2) {
-                this.attackUnitOrMoveTowards((Unit)target, 0.0);
+                this.attackUnitOrMoveTowards(target, 0.0);
             } else {
                 this.state = CreatureState.runningback;
                 this.runTowards(camp);

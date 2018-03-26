@@ -2,7 +2,7 @@ namespace BOTG_Refree
 {
     public class CreatureSpawn : Point
     {
-        CreatureSpawn(int x, int y): base(x,y)
+        public CreatureSpawn(int x, int y): base(x,y)
         {
         }
 

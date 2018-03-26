@@ -1,78 +1,70 @@
-package com.codingame.game;
+namespace BOTG_Refree
+{
 
-import java.io.Console;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Random;
+	public class Referee : AbstractReferee {
+    private GameManager<Player> gameManager;
+    //private GraphicEntityModule entityManager;
+    //private TooltipModule tooltipModule;
+    private const int LostScore = -100000000;
 
-import com.codingame.gameengine.core.AbstractPlayer;
-import com.codingame.gameengine.core.GameManager;
-import com.codingame.gameengine.core.AbstractReferee;
-import com.codingame.gameengine.core.Tooltip;
-import com.codingame.gameengine.module.entities.GraphicEntityModule;
-import com.google.inject.Inject;
-
-import tooltipModule.TooltipModule;
-
-public class Referee : AbstractReferee {
-    @Inject private GameManager<Player> gameManager;
-    @Inject private GraphicEntityModule entityManager;
-    @Inject private TooltipModule tooltipModule;
-    private final int LostScore = -100000000;
-
-    public static void setupLeague(int league){
-        switch (league){
-            case 0:{
-                Const.IGNOREITEMS = true;
-                Const.HEROCOUNT = 1;
-                Const.IGNORESKILLS = true;
-                Const.REMOVEFORESTCREATURES = true;
-                Const.TOWERHEALTHSCALE = 0.5;
-                Const.IGNOREBUSHES = true;
-                Const.Rounds = 200;
-                Const.TOWERDAMAGE = 1;
-                Const.MELEE_UNIT_COUNT = 0;
-                Const.RANGED_UNIT_COUNT = 0;
-            }case 1:{
-                Const.HEROCOUNT = 1;
-                Const.IGNORESKILLS = true;
-                Const.REMOVEFORESTCREATURES = true;
-                Const.TOWERHEALTHSCALE = 0.5;
-                Const.IGNOREBUSHES = true;
-                Const.Rounds = 200;
-                Const.TOWERDAMAGE = 1;
-                Const.MELEE_UNIT_COUNT = 0;
-                Const.RANGED_UNIT_COUNT = 0;
-            }case 2:{
-                Const.HEROCOUNT = 1;
-                Const.IGNORESKILLS = true;
-                Const.REMOVEFORESTCREATURES = true;
-                Const.TOWERHEALTHSCALE = 0.5;
-                Const.IGNOREBUSHES = true;
-                Const.Rounds = 200;
-                Const.TOWERDAMAGE = 1;
-            }case 3:{
-                Const.HEROCOUNT = 1;
-                Const.IGNORESKILLS = true;
-                Const.REMOVEFORESTCREATURES = true;
-                Const.TOWERHEALTHSCALE = 0.5;
-                Const.Rounds = 200;
-            }case 4:{
-                Const.HEROCOUNT = 1;
-                Const.IGNORESKILLS = true;
-                Const.Rounds = 200;
-            }case 5:{
-                Const.IGNORESKILLS = true;
-                Const.Rounds = 200;
-            }default:{
-                //normal.
-            }
-        }
-    }
+		public static void setupLeague(int league) {
+			switch (league) {
+				case 0:
+					Const.IGNOREITEMS = true;
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.IGNOREBUSHES = true;
+					Const.Rounds = 200;
+					Const.TOWERDAMAGE = 1;
+					Const.MELEE_UNIT_COUNT = 0;
+					Const.RANGED_UNIT_COUNT = 0;
+					break;
+				case 1:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.IGNOREBUSHES = true;
+					Const.Rounds = 200;
+					Const.TOWERDAMAGE = 1;
+					Const.MELEE_UNIT_COUNT = 0;
+					Const.RANGED_UNIT_COUNT = 0;
+					break;
+				case 2:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.IGNOREBUSHES = true;
+					Const.Rounds = 200;
+					Const.TOWERDAMAGE = 1;
+					break;
+				case 3:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.Rounds = 200;
+					break;
+				case 4:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.Rounds = 200;
+					break;
+				case 5:
+					Const.IGNORESKILLS = true;
+					Const.Rounds = 200;
+					break;
+				default:
+					//normal.
+					break;
+			}
+		}
 
 
-    override
-    public Properties init(Properties params) {
+    override public Properties init(Properties params) {
         long seed = 42;
         try{
             seed = Long.parseLong(params.getProperty("seed"));
@@ -83,7 +75,7 @@ public class Referee : AbstractReferee {
 
         setupLeague(gameManager.getLeagueLevel() - 1); // gameManager.getLeagueLevel() - 1
 
-        Const.viewController.initialize(entityManager, tooltipModule, gameManager.getActivePlayers(), gameManager);
+        //Const.viewController.initialize(entityManager, tooltipModule, gameManager.getActivePlayers(), gameManager);
         gameManager.setMaxTurns(Const.Rounds);
         entityManager.createSprite().setImage(Const.BACKGROUND).setAnchor(0).setZIndex(-1000);
         Const.game.initialize(gameManager.getActivePlayers());
@@ -95,8 +87,7 @@ public class Referee : AbstractReferee {
         return params;
     }
 
-    override
-    public void gameTurn(int turn) {
+    override public void gameTurn(int turn) {
         Const.game.beforeTurn(turn, gameManager.getActivePlayers());
         Const.viewController.initRound(turn);
 

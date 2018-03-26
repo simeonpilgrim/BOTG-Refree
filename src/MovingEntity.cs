@@ -5,10 +5,10 @@ namespace BOTG_Refree
 {
     public class MovingEntity : Point
     {
-        protected double vx;
-        protected double vy;
-        protected double forceVX;
-        protected double forceVY;
+        public double vx;
+        public double vy;
+        public double forceVX;
+        public double forceVY;
 
         public MovingEntity(double x, double y, double vx, double vy) : base(x, y)
         {
@@ -58,6 +58,57 @@ namespace BOTG_Refree
             double coef = distance / d;
 
             move(x + dx * coef, y + dy * coef);
+        }
+
+        public double getCollisionTime(MovingEntity entity, double radius)
+        {
+            // Check instant collision
+            if (this.Distance(entity) <= radius)
+            {
+                return 0.0;
+            }
+
+            // Fixes rounding errors.
+            radius -= Const.EPSILON;
+
+            // Both units are motionless
+            if (this.vx == 0.0 && this.vy == 0.0 && entity.vx == 0.0 && entity.vy == 0.0)
+            {
+                return -1;
+            }
+
+            // Change referencial
+            // Unit u is not at point (0, 0) with a speed vector of (0, 0)
+            double x2 = this.x - entity.x;
+            double y2 = this.y - entity.y;
+            double r2 = radius;
+            double vx2 = this.vx - entity.vx;
+            double vy2 = this.vy - entity.vy;
+
+            double a = vx2 * vx2 + vy2 * vy2;
+
+            if (a <= 0.0)
+            {
+                return -1;
+            }
+
+            double b = 2.0 * (x2 * vx2 + y2 * vy2);
+            double c = x2 * x2 + y2 * y2 - r2 * r2;
+            double delta = b * b - 4.0 * a * c;
+
+            if (delta < 0.0)
+            {
+                return -1;
+            }
+
+            double t = (-b - Math.Sqrt(delta)) / (2.0 * a);
+
+            if (t <= 0.0)
+            {
+                return -1;
+            }
+
+            return t;
         }
     }
 }

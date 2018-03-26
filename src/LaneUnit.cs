@@ -6,16 +6,16 @@ namespace BOTG_Refree
     public class LaneUnit : Unit
     {
         Point targetPoint;
-        Unit aggroUnit;
-        int aggroTimeLeft;
-        double aggroTset;
+        internal Unit aggroUnit;
+        internal int aggroTimeLeft;
+        internal double aggroTset;
 
         public LaneUnit(double x, double y, int health, int team, int moveSpeed, Point targetPoint, Player player) : base(x, y, health, team, moveSpeed, player)
         {
             this.targetPoint = targetPoint;
         }
 
-        override void afterRound()
+        void afterRound()
         {
             base.afterRound();
             aggroTimeLeft--;
@@ -26,7 +26,7 @@ namespace BOTG_Refree
             return "UNIT";
         }
 
-        void findAction()
+        internal void findAction()
         {
             if (isDead || stunTime > 0) return;
             if (aggroUnit != null && aggroTimeLeft > 0 && Distance(aggroUnit) < Const.AGGROUNITRANGE && aggroUnit.visible)
@@ -43,7 +43,7 @@ namespace BOTG_Refree
             if (canAttack(closest))
             {
                 fireAttack(closest);
-            } else if (closest != null && distance2(closest) < Const.AGGROUNITRANGE2)
+            } else if (closest != null && Distance2(closest) < Const.AGGROUNITRANGE2)
             {
                 attackUnitOrMoveTowards(closest, 0);
             } else
@@ -52,7 +52,7 @@ namespace BOTG_Refree
                 if (canAttack(closest))
                 {
                     fireAttack(closest);
-                } else if (closest != null && distance2(closest) < Const.AGGROUNITRANGE2 && allowedToAttack(closest))
+                } else if (closest != null && Distance2(closest) < Const.AGGROUNITRANGE2 && allowedToAttack(closest))
                 {
                     attackUnitOrMoveTowards(closest, 0);
                 } else

@@ -5,21 +5,21 @@ namespace BOTG_Refree
 {
     public class Tower : Unit
     {
-        Unit aggroUnit;
-        int aggroTimeLeft;
-        double aggroTset;
+       internal Unit aggroUnit;
+       internal int aggroTimeLeft;
+       internal double aggroTset;
 
-        Tower(double x, double y, int health, int team, Player player):base(x, y, health, team, 0, player)
+        public Tower(double x, double y, int health, int team, Player player):base(x, y, health, team, 0, player)
         {
         }
 
-        override void afterRound()
+        void afterRound()
         {
             base.afterRound();
             aggroTimeLeft--;
         }
 
-        void findAction(List<Unit> allUnits)
+        internal void findAction(List<Unit> allUnits)
         {
             if (aggroUnit != null && aggroTimeLeft > 0 && canAttack(aggroUnit))
             {

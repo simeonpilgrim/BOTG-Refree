@@ -1,216 +1,213 @@
-package com.codingame.game;
+using System.Collections.Generic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+namespace BOTG_Refree
+{
 
-import com.codingame.gameengine.core.AbstractPlayer;
+	public class Player : AbstractPlayer {
+		public List<Hero> heroes = new List<Hero>();
+		public Tower tower;
+		public int gold;
+		public int denies;
+		public int unitKills;
 
-public class Player : AbstractPlayer {
-    public List<Hero> heroes = new ArrayList<>();
-    public Tower tower;
-    public int gold;
-    public int denies;
-    public int unitKills;
+		public void addHero(Hero hero) {
+			this.heroes.Add(hero);
+		}
 
-    public void addHero(Hero hero) {
-        this.heroes.add(hero);
-    }
+		public void handlePlayerOutputs(string[] outputs) {
+			List<Hero> internalHeroes = new List<Hero>(heroes);
+			if (outputs.Length == 2 && outputs[1].StartsWith("SELL") && heroesAlive() == 2) { //Flip direction to allow other way commands
+				Hero first = internalHeroes[0];
+				internalHeroes.RemoveAt(0);
+				internalHeroes.Add(first);
 
-    public void handlePlayerOutputs(string[] outputs) throws Exception{
-        List<Hero> internalHeroes = new ArrayList<>(heroes);
-        if(outputs.length==2 && outputs[1].startsWith("SELL") && heroesAlive() == 2){ //Flip direction to allow other way commands
-            Hero first = internalHeroes.get(0);
-            internalHeroes.remove(0);
-            internalHeroes.add(first);
+				string temp = outputs[0];
+				outputs[0] = outputs[1];
+				outputs[1] = temp;
+			}
 
-            string temp = outputs[0];
-            outputs[0] = outputs[1];
-            outputs[1] = temp;
-        }
+			int outputCounter = 0;
+			for (int i = 0; i < internalHeroes.Count; i++) {
+				Hero hero = internalHeroes[i];
+				if (hero.isDead) {
+					continue;
+				}
 
-        int outputCounter = 0;
-        for (int i = 0; i < internalHeroes.size(); i++) {
-            Hero hero = internalHeroes.get(i);
-            if (hero.isDead) {
-                continue;
-            }
+				if (hero.stunTime > 0) {
+					outputCounter++;
+					continue;
+				}
 
-            if(hero.stunTime > 0){
-                outputCounter++;
-                continue;
-            }
+				string roundOutput = outputs[outputCounter++];
+				doHeroCommand(roundOutput, hero);
+			}
+		}
 
-            string roundOutput = outputs[outputCounter++];
-            doHeroCommand(roundOutput, hero);
-        }
-    }
+		private void doHeroCommand(string roundOutput, Hero hero) {
+			string[] roundOutputSplitted = roundOutput.Split(";", 2);
 
-    private void doHeroCommand(string roundOutput, Hero hero){
-        string[] roundOutputSplitted = roundOutput.split(";", 2);
+			try {
 
-        try{
+				string message = roundOutputSplitted.Length > 1 ? roundOutputSplitted[1] : "";
+				//Const.viewController.addMessageToHeroHud(hero, message);
 
-            string message = roundOutputSplitted.length > 1 ? roundOutputSplitted[1] : "";
-            Const.viewController.addMessageToHeroHud(hero, message);
+				string[] outputValues = roundOutputSplitted[0].Split(" ");
+				string command = outputValues[0];
+				int arguments = outputValues.Length - 1;
 
-            string [] outputValues = roundOutputSplitted[0].split(" ");
-            string command = outputValues[0];
-            int arguments = outputValues.length-1;
+				// Verification
+				bool allNumbers = true;
+				for (int num = 1; num < outputValues.Length; num++) {
+					if (!Utilities.isNumber(outputValues[num])) allNumbers = false;
+				}
 
-            // Verification
-            bool allNumbers = true;
-            for(int num = 1; num < outputValues.length;num++){
-                if(!Utilities.isNumber(outputValues[num])) allNumbers = false;
-            }
+				if (command == "MOVE_ATTACK" && arguments == 3 && allNumbers) {
+					// MOVE_ATTACK x y unitID
+					double x = double.Parse(outputValues[1]);
+					double y = double.Parse(outputValues[2]);
+					int id = int.Parse(outputValues[3]);
+					Point target = new Point(x, y);
+					hero.runTowards(target);
+					Unit unit = Const.game.getUnitOfId(id);
+					if (unit != null) {
+						Const.game.events.Add(new DelayedAttackEvent(unit, hero, Utilities.timeToReachTarget(hero, target, hero.moveSpeed)));
+					} else printError("Can't attack unit of id: " + id);
+				}
 
-            if (command.equals("MOVE_ATTACK") && arguments == 3 && allNumbers) {
-                // MOVE_ATTACK x y unitID
-                double x = Double.parseDouble(outputValues[1]);
-                double y = Double.parseDouble(outputValues[2]);
-                int id = Integer.parseInt(outputValues[3]);
-                Point target = new Point(x, y);
-                hero.runTowards(target);
-                Unit unit = Const.game.getUnitOfId(id);
-                if (unit != null) {
-                    Const.game.events.Add(new Event.DelayedAttackEvent(unit, hero, Utilities.timeToReachTarget(hero, target, hero.moveSpeed)));
-                }else printError("Can't attack unit of id: " + id);
-            }
+				else if (command == "MOVE" && arguments == 2 && allNumbers) {
+					double x = double.Parse(outputValues[1]);
+					double y = double.Parse(outputValues[2]);
+					hero.runTowards(new Point(x, y));
+				}
 
-            else if (command.equals("MOVE") && arguments == 2  && allNumbers) {
-                double x = Double.parseDouble(outputValues[1]);
-                double y = Double.parseDouble(outputValues[2]);
-                hero.runTowards(new Point(x, y));
-            }
+				else if (command == "ATTACK_NEAREST" && arguments == 1 && !allNumbers) {
+					string unitType = outputValues[1];
+					double dist = 99999999;
+					Unit toHit = hero.findClosestOnOtherTeam(unitType);
+					if (toHit != null) {
+						hero.attackUnitOrMoveTowards(toHit, 0.0);
+					}
+				}
 
-            else if (command.equals("ATTACK_NEAREST") && arguments == 1  && !allNumbers) {
-                string unitType = outputValues[1];
-                double dist = 99999999;
-                Unit toHit = hero.findClosestOnOtherTeam(unitType);
-                if (toHit != null) {
-                    hero.attackUnitOrMoveTowards(toHit, 0.0);
-                }
-            }
+				else if (command == "ATTACK" && arguments == 1 && allNumbers) {
+					int id = Integer.parseInt(outputValues[1]);
+					Unit unit = Const.game.getUnitOfId(id);
+					if (unit != null && hero.allowedToAttack(unit)) {
+						hero.attackUnitOrMoveTowards(unit, 0.0);
+					} else printError("Cant attack: " + id);
 
-            else if (command.equals("ATTACK") && arguments == 1 && allNumbers) {
-                int id = Integer.parseInt(outputValues[1]);
-                Unit unit = Const.game.getUnitOfId(id);
-                if (unit != null && hero.allowedToAttack(unit)) {
-                    hero.attackUnitOrMoveTowards(unit, 0.0);
-                }else printError("Cant attack: " + id);
+				}
 
-            }
+				else if (command == "BUY" && arguments == 1 && !allNumbers) {
+					Item item = Const.game.items.get(outputValues[1]);
 
-            else if (command.equals("BUY") && arguments == 1 && !allNumbers) {
-                Item item = Const.game.items.get(outputValues[1]);
+					if (item == null) {
+						printError(getNicknameToken() + " tried to buy item: " + outputValues[1] + ", but it does not exist");
+					} else if (gold < item.cost) {
+						printError(getNicknameToken() + " can't afford " + outputValues[1]);
+					} else if (hero.items.size() >= Const.MAXITEMCOUNT) {
+						printError("Can't have more than " + Const.MAXITEMCOUNT + " items. " + (item.isPotion ? "Potions need a free item slot to be bought." : ""));
+					} else {
+						hero.addItem(item);
+						gold -= item.cost;
+						//Const.viewController.addItem(hero, item);
+					}
+				}
 
-                if(item == null){
-                    printError(getNicknameToken() + " tried to buy item: " + outputValues[1] + ", but it does not exist");
-                }else if(gold < item.cost){
-                    printError(getNicknameToken() +" can't afford " + outputValues[1]);
-                }else if(hero.items.size()>=Const.MAXITEMCOUNT){
-                    printError("Can't have more than " + Const.MAXITEMCOUNT + " items. " + (item.isPotion? "Potions need a free item slot to be bought.":"" ));
-                }else{
-                    hero.addItem(item);
-                    gold -= item.cost;
-                    Const.viewController.addItem(hero, item);
-                }
-            }
+				else if (command == "SELL" && arguments == 1 && !allNumbers) {
+					string itemName = outputValues[1];
+					Optional<Item> foundItem = hero.items.stream().filter(currItem->currItem.name.equals(itemName)).findFirst();
 
-            else if (command.equals("SELL") && arguments == 1 && !allNumbers) {
-                string itemName = outputValues[1];
-                Optional<Item> foundItem = hero.items.stream().filter(currItem -> currItem.name.equals(itemName)).findFirst();
+					if (foundItem == null || !foundItem.isPresent()) {
+						printError("Selling not owned item " + foundItem.get().name);
+					} else {
+						hero.removeItem(foundItem.get());
+						gold += Utilities.round(foundItem.get().cost * Const.SELLITEMREFUND);
+						//Const.viewController.removeItem(hero, foundItem.get());
+					}
+				}
 
-                if(foundItem == null || !foundItem.isPresent()){
-                    printError("Selling not owned item " + foundItem.get().name);
-                }else{
-                    hero.removeItem(foundItem.get());
-                    gold += Utilities.round(foundItem.get().cost*Const.SELLITEMREFUND);
-                    Const.viewController.removeItem(hero, foundItem.get());
-                }
-            }
+				else if (command == "WAIT" && arguments == 0) {
+					return;
+				}
 
-            else if(command.equals("WAIT") && arguments == 0 ){
-                return;
-            }
+				else if (allNumbers)
+				{ // skillz
+					foreach (SkillBase skill in hero.skills) {
+						if (skill == null) continue;
+						if (command == skill.skillName) {
+							if (skill.manaCost > hero.mana) {
+								printError("Not enough mana to use " + skill.skillName);
+							} else if (skill.cooldown > 0) {
+								printError("Skill on cooldown: " + skill.skillName + ". Cooldown left: " + skill.cooldown);
+							} else {
+								double x = -1;
+								double y = -1;
+								int unitId = -1;
+								if (outputValues.Length == 3 && skill.getTargetType() == SkillType.POSITION) {
+									x = double.Parse(outputValues[1]);
+									y = double.Parse(outputValues[2]);
+									//Const.viewController.addEffect(hero, new Point(x,y), "spell", 0);
+								}
+								else if (outputValues.Length == 2 && skill.getTargetType() == SkillType.UNIT) {
+									unitId = int.Parse(outputValues[1]);
+									Unit unit = Const.game.getUnitOfId(unitId);
+									//Const.viewController.addEffect(hero, unit, "spell", 0);
 
-            else if(allNumbers)
-            { // skillz
-                for(Skills.SkillBase skill : hero.skills){
-                    if(skill==null) continue;
-                    if(command.equals(skill.skillName)){
-                        if(skill.manaCost > hero.mana){
-                            printError("Not enough mana to use " + skill.skillName);
-                        }else if(skill.cooldown > 0){
-                            printError("Skill on cooldown: " + skill.skillName+ ". Cooldown left: " + skill.cooldown);
-                        } else{
-                            double x = -1;
-                            double y = -1;
-                            int unitId = -1;
-                            if(outputValues.length==3 && skill.getTargetType() == SkillType.POSITION){
-                                x = Double.parseDouble(outputValues[1]);
-                                y = Double.parseDouble(outputValues[2]);
-                                Const.viewController.addEffect(hero, new Point(x,y), "spell", 0);
-                            }
-                            else if(outputValues.length==2 && skill.getTargetType() == SkillType.UNIT){
-                                unitId = Integer.parseInt(outputValues[1]);
-                                Unit unit = Const.game.getUnitOfId(unitId);
-                                Const.viewController.addEffect(hero, unit, "spell", 0);
+									if (!hero.allowedToTarget(unit) || unit is Tower) {
+										printError(hero.heroType + " can't target unit with spell. Either invisible or not existing.");
+										return;
+									}
+								}
+								else if (outputValues.Length == 1 && skill.getTargetType() == SkillType.SELF) { }
+								else {
+									printError(hero.heroType + " invalid number of parameters on spell. " + roundOutputSplitted[0]);
+									return;
+								}
 
-                                if(!hero.allowedToTarget(unit) || unit instanceof Tower) {
-                                    printError(hero.heroType + " can't target unit with spell. Either invisible or not existing.");
-                                    return;
-                                }
-                            }
-                            else if(outputValues.length==1 && skill.getTargetType() == SkillType.SELF){ }
-                            else {
-                               printError(hero.heroType + " invalid number of parameters on spell. " + roundOutputSplitted[0]);
-                               return;
-                            }
+								hero.mana -= skill.manaCost;
+								skill.cooldown = skill.initialCooldown;
+								hero.invisibleBySkill = false;
+								skill.doSkill(Const.game, x, y, unitId);
+							}
 
-                            hero.mana-= skill.manaCost;
-                            skill.cooldown = skill.initialCooldown;
-                            hero.invisibleBySkill = false;
-                            skill.doSkill(Const.game, x, y, unitId);
-                        }
+							return;
+						}
+					}
 
-                        return;
-                    }
-                }
+					printError(getNicknameToken() + " tried to use a spell not found on  " + hero.heroType + ". Input was: " + roundOutputSplitted[0]);
+				} else {
+					printError(getNicknameToken() + " tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
+				}
+			} catch (Exception e) {
+				printError(getNicknameToken() + " tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
+			}
+		}
 
-                printError(getNicknameToken() + " tried to use a spell not found on  " + hero.heroType+ ". Input was: " + roundOutputSplitted[0]);
-            }else{
-                printError(getNicknameToken() + " tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
-            }
-        }catch (Exception e){
-            printError(getNicknameToken() + " tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
-        }
-    }
+		public int heroesAlive() {
+			int alive = 0;
+			foreach (Hero hero in heroes) {
+				if (!hero.isDead) alive++;
+			}
+			return alive;
+		}
 
-    public int heroesAlive(){
-        int alive = 0;
-        for(Hero hero : heroes){
-            if(!hero.isDead) alive++;
-        }
-        return alive;
-    }
+		override
+		public int getExpectedOutputLines() {
+			if (this.heroes.Count < Const.HEROCOUNT) return 1;
+			return (int)this.heroes.stream().filter(h-> !h.isDead).count();
+		}
 
-    override
-    public int getExpectedOutputLines() {
-        if (this.heroes.size() < Const.HEROCOUNT) return 1;
-        return (int) this.heroes.stream().filter(h -> !h.isDead).count();
-    }
+		public int getGold() {
+			return this.gold;
+		}
 
-    public int getGold() {
-        return this.gold;
-    }
+		public void setGold(int amount) {
+			this.gold = amount;
+		}
 
-    public void setGold(int amount) {
-    	this.gold = amount;
-    }
-
-    private void printError(string message){
-        Const.viewController.addSummary(message);
-    }
+		private void printError(string message) {
+			//Const.viewController.addSummary(message);
+		}
+	}
 }
