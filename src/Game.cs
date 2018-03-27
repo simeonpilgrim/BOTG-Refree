@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BOTG_Refree
 {
@@ -92,7 +93,7 @@ namespace BOTG_Refree
 					}
 				}
 
-				Collections.sort(occuringEvents, Comparator.comparingInt(Event::getOutcome));
+				occuringEvents.Sort();
 
 				foreach (Event currentEvent in occuringEvents)
 				{
@@ -410,7 +411,7 @@ namespace BOTG_Refree
 			}
 		}
 
-		void initialize(List<Player> players)
+		internal void initialize(List<Player> players)
 		{
 			setupGame(players);
 			items = Factories.createItems(setupGold(players));
@@ -453,7 +454,7 @@ namespace BOTG_Refree
 
 
 		// random spawn point placement
-		CreatureSpawn[] spawns = { };
+		internal CreatureSpawn[] spawns = { };
 		Creature[] creatures = new Creature[0];
 		double[] amplitude = { };
 

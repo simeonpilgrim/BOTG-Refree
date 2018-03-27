@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BOTG_Refree
 {
-	public abstract class Event
+	public abstract class Event: IComparable<Event>
 	{
 		public static int NONE = 0;
 		public static int LIFECHANGED = 1;
@@ -14,7 +14,7 @@ namespace BOTG_Refree
 		protected static List<Unit> EMPTYLIST = new List<Unit>();
 
 		protected double _t;
-		protected double t;
+		internal double t;
 		protected Unit unit;
 
 		internal Event(Unit unit, double t)
@@ -24,9 +24,18 @@ namespace BOTG_Refree
 			_t = t;
 		}
 
-		protected virtual int getOutcome() { return NONE; }
+		public int CompareTo(Event compareEvent)
+		{
+			// A null value means that this object is greater.
+			if (compareEvent == null)
+				return 1;
 
-		protected abstract List<Unit> onEventTime(double currentTime);
+			else
+				return this.getOutcome().CompareTo(compareEvent.getOutcome());
+		}
+		internal virtual int getOutcome() { return NONE; }
+
+		internal abstract List<Unit> onEventTime(double currentTime);
 
 		protected virtual bool useAcrossRounds() { return false; }
 
@@ -132,12 +141,12 @@ namespace BOTG_Refree
 		{
 		}
 
-		protected override int getOutcome()
+		internal override int getOutcome()
 		{
 			return SPEEDCHANGED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.vx = unit.forceVX;
 			unit.vy = unit.forceVY;
@@ -164,7 +173,7 @@ namespace BOTG_Refree
 			this.vy = forcevy;
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return SPEEDCHANGED;
 		}
@@ -195,7 +204,7 @@ namespace BOTG_Refree
 			this.vy = vy;
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return SPEEDCHANGED;
 		}
@@ -311,7 +320,7 @@ namespace BOTG_Refree
 
 		override protected bool useAcrossRounds() { return true; }
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return STUNNED;
 		}
@@ -342,7 +351,7 @@ namespace BOTG_Refree
 			this.y = y;
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return TELEPORTED;
 		}
@@ -366,7 +375,7 @@ namespace BOTG_Refree
 		{
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return NONE;
 		}
@@ -407,7 +416,7 @@ namespace BOTG_Refree
 			return true;
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return NONE;
 		}
@@ -438,7 +447,7 @@ namespace BOTG_Refree
 
 		override protected bool useAcrossRounds() { return !unit.visible; }
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return NONE;
 		}
@@ -654,7 +663,7 @@ namespace BOTG_Refree
 			this.damageByTime = damageByTime;
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return NONE;
 		}
@@ -710,7 +719,7 @@ namespace BOTG_Refree
 			this.potentialTargets = potentialTargets;
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return STUNNED;
 		}
@@ -790,7 +799,7 @@ namespace BOTG_Refree
 			recalculate(null);
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return SPEEDCHANGED;
 		}
@@ -868,12 +877,12 @@ namespace BOTG_Refree
 			recalculate(true);
 		}
 
-		override protected int getOutcome()
+		override internal int getOutcome()
 		{
 			return SPEEDCHANGED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			this.unit.vx = unit.forceVX;
 			this.unit.vy = unit.forceVY;

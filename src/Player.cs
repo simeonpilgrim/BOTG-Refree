@@ -1,7 +1,18 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BOTG_Refree
 {
+	public class AbstractPlayer
+	{
+		public string getNicknameToken() { return "Player"; }
+		public void setScore(int value) { }
+		public void deactivate(string message) { }
+		public void sendInputLine(string message) { }
+		public void execute() { }
+		public string[] getOutputs() { return new string[0](); }
+	}
 
 	public class Player : AbstractPlayer {
 		public List<Hero> heroes = new List<Hero>();
@@ -43,15 +54,17 @@ namespace BOTG_Refree
 			}
 		}
 
+		static char[] delimiter = ";".ToCharArray();
+
 		private void doHeroCommand(string roundOutput, Hero hero) {
-			string[] roundOutputSplitted = roundOutput.Split(";", 2);
+			string[] roundOutputSplitted = roundOutput.Split(delimiter, 2);
 
 			try {
 
 				string message = roundOutputSplitted.Length > 1 ? roundOutputSplitted[1] : "";
 				//Const.viewController.addMessageToHeroHud(hero, message);
 
-				string[] outputValues = roundOutputSplitted[0].Split(" ");
+				string[] outputValues = roundOutputSplitted[0].Split(' ');
 				string command = outputValues[0];
 				int arguments = outputValues.Length - 1;
 
@@ -82,7 +95,6 @@ namespace BOTG_Refree
 
 				else if (command == "ATTACK_NEAREST" && arguments == 1 && !allNumbers) {
 					string unitType = outputValues[1];
-					double dist = 99999999;
 					Unit toHit = hero.findClosestOnOtherTeam(unitType);
 					if (toHit != null) {
 						hero.attackUnitOrMoveTowards(toHit, 0.0);
@@ -90,7 +102,7 @@ namespace BOTG_Refree
 				}
 
 				else if (command == "ATTACK" && arguments == 1 && allNumbers) {
-					int id = Integer.parseInt(outputValues[1]);
+					int id = int.Parse(outputValues[1]);
 					Unit unit = Const.game.getUnitOfId(id);
 					if (unit != null && hero.allowedToAttack(unit)) {
 						hero.attackUnitOrMoveTowards(unit, 0.0);
@@ -99,13 +111,13 @@ namespace BOTG_Refree
 				}
 
 				else if (command == "BUY" && arguments == 1 && !allNumbers) {
-					Item item = Const.game.items.get(outputValues[1]);
+					Item item = Const.game.items[outputValues[1]];
 
 					if (item == null) {
-						printError(getNicknameToken() + " tried to buy item: " + outputValues[1] + ", but it does not exist");
+						printError(" tried to buy item: " + outputValues[1] + ", but it does not exist");
 					} else if (gold < item.cost) {
-						printError(getNicknameToken() + " can't afford " + outputValues[1]);
-					} else if (hero.items.size() >= Const.MAXITEMCOUNT) {
+						printError(" can't afford " + outputValues[1]);
+					} else if (hero.items.Count >= Const.MAXITEMCOUNT) {
 						printError("Can't have more than " + Const.MAXITEMCOUNT + " items. " + (item.isPotion ? "Potions need a free item slot to be bought." : ""));
 					} else {
 						hero.addItem(item);
@@ -116,14 +128,14 @@ namespace BOTG_Refree
 
 				else if (command == "SELL" && arguments == 1 && !allNumbers) {
 					string itemName = outputValues[1];
-					Optional<Item> foundItem = hero.items.stream().filter(currItem->currItem.name.equals(itemName)).findFirst();
+					var foundItem = hero.items.Where(currItem=>currItem.name==itemName).First();
 
-					if (foundItem == null || !foundItem.isPresent()) {
-						printError("Selling not owned item " + foundItem.get().name);
+					if (foundItem == null) {
+						printError("Selling not owned item " + foundItem.name);
 					} else {
-						hero.removeItem(foundItem.get());
-						gold += Utilities.round(foundItem.get().cost * Const.SELLITEMREFUND);
-						//Const.viewController.removeItem(hero, foundItem.get());
+						hero.removeItem(foundItem);
+						gold += Utilities.round(foundItem.cost * Const.SELLITEMREFUND);
+						//Const.viewController.removeItem(hero, foundItem);
 					}
 				}
 
@@ -175,12 +187,12 @@ namespace BOTG_Refree
 						}
 					}
 
-					printError(getNicknameToken() + " tried to use a spell not found on  " + hero.heroType + ". Input was: " + roundOutputSplitted[0]);
+					printError(" tried to use a spell not found on  " + hero.heroType + ". Input was: " + roundOutputSplitted[0]);
 				} else {
-					printError(getNicknameToken() + " tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
+					printError(" tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
 				}
 			} catch (Exception e) {
-				printError(getNicknameToken() + " tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
+				printError(" tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
 			}
 		}
 
@@ -192,10 +204,9 @@ namespace BOTG_Refree
 			return alive;
 		}
 
-		override
 		public int getExpectedOutputLines() {
 			if (this.heroes.Count < Const.HEROCOUNT) return 1;
-			return (int)this.heroes.stream().filter(h-> !h.isDead).count();
+			return this.heroes.Where(h=> !h.isDead).Count();
 		}
 
 		public int getGold() {

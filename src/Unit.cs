@@ -113,7 +113,7 @@ namespace BOTG_Refree
 			else Const.game.events.Add(new AttackMoveUnitEvent(this, unit));
 		}
 
-		bool allowedToTarget(Unit unit) {
+		internal bool allowedToTarget(Unit unit) {
 			if (unit == null) return false; // Nothing to see here
 			if (isDead) return false; // Codebusters is another game..
 			if (stunTime > 0) return false; // Gimme a break

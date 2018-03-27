@@ -34,7 +34,7 @@ namespace BOTG_Refree
             }
         }
 
-        void addItem(Item item) {
+        internal void addItem(Item item) {
             if (item == null) {
                 return;
             }
@@ -45,7 +45,7 @@ namespace BOTG_Refree
             }
         }
 
-        void removeItem(Item item) {
+        internal void removeItem(Item item) {
             if (!items.Contains(item)) return;
             items.Remove(item);
             addCharacteristics(item, -1);

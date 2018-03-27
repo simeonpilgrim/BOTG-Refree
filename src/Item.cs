@@ -19,7 +19,7 @@ namespace BOTG_Refree
             this.isPotion = isPotion;
         }
 
-        string getPlayerString()
+        internal string getPlayerString()
         {
             return name +
                     " " + cost +

@@ -15,7 +15,7 @@ namespace BOTG_Refree
 
 		public double Distance(Point p)
 		{
-			return Math.Sqrt(distance2(p));
+			return Math.Sqrt(Distance2(p));
 		}
 
 		public double Distance2(Point p)
