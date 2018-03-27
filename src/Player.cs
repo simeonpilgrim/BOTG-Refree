@@ -1,19 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace BOTG_Refree
 {
-	public class AbstractPlayer
-	{
-		public string getNicknameToken() { return "Player"; }
-		public void setScore(int value) { }
-		public void deactivate(string message) { }
-		public void sendInputLine(string message) { }
-		public void execute() { }
-		public string[] getOutputs() { return new string[0](); }
-	}
-
 	public class Player : AbstractPlayer {
 		public List<Hero> heroes = new List<Hero>();
 		public Tower tower;
@@ -27,7 +18,8 @@ namespace BOTG_Refree
 
 		public void handlePlayerOutputs(string[] outputs) {
 			List<Hero> internalHeroes = new List<Hero>(heroes);
-			if (outputs.Length == 2 && outputs[1].StartsWith("SELL") && heroesAlive() == 2) { //Flip direction to allow other way commands
+			if (outputs.Length == 2 && outputs[1].StartsWith("SELL") && heroesAlive() == 2) { 
+                //Flip order, so SELL happens first, thus the gold can be used by other player
 				Hero first = internalHeroes[0];
 				internalHeroes.RemoveAt(0);
 				internalHeroes.Add(first);
@@ -56,7 +48,9 @@ namespace BOTG_Refree
 
 		static char[] delimiter = ";".ToCharArray();
 
-		private void doHeroCommand(string roundOutput, Hero hero) {
+
+
+        private void doHeroCommand(string roundOutput, Hero hero) {
 			string[] roundOutputSplitted = roundOutput.Split(delimiter, 2);
 
 			try {

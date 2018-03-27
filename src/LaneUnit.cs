@@ -5,7 +5,7 @@ namespace BOTG_Refree
 {
     public class LaneUnit : Unit
     {
-        Point targetPoint;
+        internal Point targetPoint;
         internal Unit aggroUnit;
         internal int aggroTimeLeft;
         internal double aggroTset;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace BOTG_Refree
 {
@@ -12,7 +13,7 @@ namespace BOTG_Refree
         public int manaregeneration;
         public int maxMana;
         int channeling;
-        int visibilityTimer;
+        public int visibilityTimer;
         public List<Item> items = new List<Item>();
         string avatar = Const.MAGEAVATAR;
 
@@ -53,23 +54,24 @@ namespace BOTG_Refree
 
         void addCharacteristics(Item item, int amplitude) {
             var characteristics = item.stats;
-            var c = this.getClass();
-            characteristics.ForEach((k, v) => {
+            var c = this.GetType();
+            foreach( var kv in characteristics) {
                 try {
-                    Field f = c.getDeclaredField(k);
-                    f.set(this, f.getInt(this) + v * amplitude);
+                    FieldInfo f = c.GetField(kv.Key);
+                    f.SetValue(this, (int)f.GetValue(this) + kv.Value * amplitude);
                 } catch (Exception e) {
                 }
-            });
+            }
 
-            var c2 = this.getClass().getSuperclass();
-            characteristics.forEach((k, v) => {
+            var c2 = this.GetType().BaseType;
+            foreach (var kv in characteristics)
+            {
                 try {
-                    Field f = c2.getDeclaredField(k);
-                    f.set(this, f.getInt(this) + v * amplitude);
+                    FieldInfo f = c2.GetField(kv.Key);
+                    f.SetValue(this, (int)f.GetValue(this) + kv.Value * amplitude);
                 } catch (Exception e) {
                 }
-            });
+            }
 
             if (mana > maxMana) mana = maxMana;
             if (health > maxHealth) health = maxHealth;

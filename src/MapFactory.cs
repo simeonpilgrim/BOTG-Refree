@@ -78,7 +78,7 @@ namespace BOTG_Refree
 		}
 
 
-		CreatureSpawn[] generateSpawns()
+		internal CreatureSpawn[] generateSpawns()
 		{
 			int forestCampCount = (int)(Const.random.NextDouble() * 2 + 3);
 			CreatureSpawn[] spawns = new CreatureSpawn[forestCampCount];
@@ -109,9 +109,9 @@ namespace BOTG_Refree
         public Dictionary<string, Item> generateItems(int playersGold) {
 			Dictionary<string, Item> items = new Dictionary<string, Item>();
 
-            foreach(int[] level in ItemLevels) {
+            for(int l = 0; l < ItemLevels.GetLength(0); l++) {
                 for (int i = 0; i < Const.NB_ITEMS_PER_LEVEL; i++) {
-                    addItem(generateItem(level[0], level[1], items.Count + 1), items);
+                    addItem(generateItem(ItemLevels[l,0], ItemLevels[l,1], items.Count + 1), items);
                 }
             }
             addItem(generateManaPot(), items);

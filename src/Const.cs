@@ -105,13 +105,13 @@ namespace BOTG_Refree
         public static string POTION = "potion.png";
 
         //ITEM STATS
-        public static string DAMAGE = "damage";
-        public static string HEALTH = "health";
-        public static string MAXHEALTH = "maxHealth";
-        public static string MAXMANA = "maxMana";
-        public static string MANA = "mana";
-        public static string MOVESPEED = "moveSpeed";
-        public static string MANAREGEN = "manaregeneration";
+        public const string DAMAGE = "damage";
+        public const string HEALTH = "health";
+        public const string MAXHEALTH = "maxHealth";
+        public const string MAXMANA = "maxMana";
+        public const string MANA = "mana";
+        public const string MOVESPEED = "moveSpeed";
+        public const string MANAREGEN = "manaregeneration";
         public static string[] STATS = { DAMAGE, HEALTH, MANA, MOVESPEED, MANAREGEN };
         public static int MINIMUM_STAT_COST = 30;
         public static int NB_ITEMS_PER_LEVEL = 5;

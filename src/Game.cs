@@ -145,10 +145,10 @@ namespace BOTG_Refree
 
 		private void handleDamage()
 		{
-			foreach (var entry in damages.entrySet())
+			foreach (var entry in damages)
 			{
-				Unit target = entry.getKey();
-				List<Damage> dmgs = entry.getValue();
+				Unit target = entry.Key;
+				List<Damage> dmgs = entry.Value;
 				int totalDamage = 0;
 				bool anyHero = target is Hero;
 

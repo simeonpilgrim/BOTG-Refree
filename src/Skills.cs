@@ -43,7 +43,7 @@ namespace BOTG_Refree
 		{
 			public EmptySkill() : base(null, 100000, "NONE", 0, Const.Rounds + 1) { }
 
-			protected override void doSkill(Game game, double x, double y, int unitId) { }
+			override internal void doSkill(Game game, double x, double y, int unitId) { }
 
 			override public string getTargetTeam()
 			{
@@ -63,7 +63,7 @@ namespace BOTG_Refree
 				this.instant = instant;
 			}
 
-			protected override void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Point target = new Point(x, y);
 				if (target.Distance(hero) > range)
@@ -101,7 +101,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Point target = new Point(x, y);
 				double distance = target.Distance(hero);
@@ -137,7 +137,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Unit target = Const.game.getUnitOfId(unitId);
 				if (target.Distance(hero) <= range && !(target is Tower))
@@ -173,7 +173,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				int dmgIncrease = (int)(hero.moveSpeed * Const.POWERUPDAMAGEINCREASE);
 				hero.moveSpeed += 0;
@@ -210,7 +210,7 @@ namespace BOTG_Refree
 				this.skin = skin;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Point target = new Point(x, y);
 				if (target.Distance(hero) <= range)
@@ -247,7 +247,7 @@ namespace BOTG_Refree
 				this.skin = skin;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Point target = new Point(x, y);
 				if (target.Distance(hero) <= range + Const.EPSILON)
@@ -283,7 +283,7 @@ namespace BOTG_Refree
 			}
 
 
-			protected override void doSkill(Game game, double x, double y, int unitId)
+            override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Unit target = Const.game.getUnitOfId(unitId);
 				if (target.Distance(hero) <= range)
@@ -317,7 +317,7 @@ namespace BOTG_Refree
 				this.delay = delay;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Unit unit = Const.game.getUnitOfId(unitId);
 				double distance = unit.Distance(hero);
@@ -360,7 +360,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Unit target = Const.game.getUnitOfId(unitId);
 				double distance = target.Distance(hero);
@@ -403,7 +403,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Unit target = Const.game.getUnitOfId(unitId);
 				if (target.Distance(hero) <= range && !(target is Tower))
@@ -433,7 +433,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				hero.explosiveShield = (int)(hero.maxHealth * 0.07 + 50);
 				game.events.Add(new ExplosiveShieldEvent(hero, (int)Math.Round(duration)));
@@ -462,7 +462,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				game.events.Add(new CounterEvent(hero, duration - Const.EPSILON, range));
 				//Const.viewController.addEffect(hero, null, "counter", duration);
@@ -488,7 +488,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				hero.invisibleBySkill = true;
 				game.events.Add(new StealthEvent(hero, duration, hero.mana));
@@ -526,7 +526,7 @@ namespace BOTG_Refree
 				this.duration = stun_time;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Point target = new Point(x, y);
 				double distance = hero.Distance(target);
@@ -582,7 +582,7 @@ namespace BOTG_Refree
 				this.duration = duration;
 			}
 
-			override protected void doSkill(Game game, double x, double y, int unitId)
+			override internal void doSkill(Game game, double x, double y, int unitId)
 			{
 				Point target = new Point(x, y);
 				double distance = hero.Distance(target);

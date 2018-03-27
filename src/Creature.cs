@@ -12,7 +12,7 @@ namespace BOTG_Refree
 
         Point camp;
         public CreatureState state = CreatureState.peacefull;
-        string creatureType;
+        public string creatureType;
         public Creature(double x, double y) : base(x, y, 1, -1, 300, null)
         {
             this.camp = new Point(x, y);

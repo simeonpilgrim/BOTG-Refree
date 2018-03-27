@@ -37,9 +37,9 @@ namespace BOTG_Refree
 
 		internal abstract List<Unit> onEventTime(double currentTime);
 
-		protected virtual bool useAcrossRounds() { return false; }
+        internal virtual bool useAcrossRounds() { return false; }
 
-		protected abstract bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime);
+		internal abstract bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime);
 
 		protected bool unitAlive(Unit unit, int outcome)
 		{
@@ -115,16 +115,17 @@ namespace BOTG_Refree
 		}
 
 
-		protected void doDamage(Unit unit, int damage, Unit attacker)
-		{
-			if (Const.game.damages.containsKey(unit)) Const.game.damages.get(unit).add(new Damage(unit, attacker, damage));
-			else
-			{
-				List<Damage> damages = new List<Damage>();
-				damages.Add(new Damage(unit, attacker, damage));
-				Const.game.damages.put(unit, damages);
-			}
-		}
+        protected void doDamage(Unit unit, int damage, Unit attacker)
+        {
+            if (Const.game.damages.ContainsKey(unit))
+                Const.game.damages[unit].Add(new Damage(unit, attacker, damage));
+            else
+            {
+                List<Damage> damages = new List<Damage>();
+                damages.Add(new Damage(unit, attacker, damage));
+                Const.game.damages[unit] = damages;
+            }
+        }
 
 		protected List<Unit> createListOfUnit()
 		{
@@ -157,7 +158,7 @@ namespace BOTG_Refree
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return unitStopped(unit, affectedUnit, outcome);
 		}
@@ -178,7 +179,7 @@ namespace BOTG_Refree
 			return SPEEDCHANGED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.forceVX += vx;
 			unit.forceVY += vy;
@@ -188,7 +189,7 @@ namespace BOTG_Refree
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return !unitAlive(affectedUnit, outcome);
 		}
@@ -209,7 +210,7 @@ namespace BOTG_Refree
 			return SPEEDCHANGED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			if (unit.stunTime > 0 || (Math.Abs(unit.forceVY) > Const.EPSILON || Math.Abs(unit.forceVX) > Const.EPSILON)) return EMPTYLIST;
 			unit.vx = vx;
@@ -218,7 +219,7 @@ namespace BOTG_Refree
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return !unitAlive(affectedUnit, outcome);
 		}
@@ -235,13 +236,13 @@ namespace BOTG_Refree
 			this.attacker = attacker;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			this.attacker.fireAttack(this.unit);
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return unitStopped(this.attacker) || unitDead(this.unit, affectedUnit, outcome) || (affectedUnit == unit && hasOutcome(outcome, TELEPORTED));
 		}
@@ -259,13 +260,13 @@ namespace BOTG_Refree
 			this.damage = damage;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			doDamage(unit, damage, attacker);
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			if (affectedUnit == this.unit && hasOutcome(outcome, TELEPORTED))
 			{
@@ -287,7 +288,7 @@ namespace BOTG_Refree
 			this.range = range;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			if (this.health > unit.health)
 			{
@@ -303,7 +304,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return !unitAlive(affectedUnit, outcome);
 		}
@@ -318,14 +319,14 @@ namespace BOTG_Refree
 			this.stunTime = stunTime;
 		}
 
-		override protected bool useAcrossRounds() { return true; }
+		override internal bool useAcrossRounds() { return true; }
 
 		override internal int getOutcome()
 		{
 			return STUNNED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.stunTime = Math.Max(unit.stunTime, stunTime);
 			//Const.viewController.addEffect(unit, null, "stun", stunTime);
@@ -334,7 +335,7 @@ namespace BOTG_Refree
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return !unitAlive(affectedUnit, outcome);
 		}
@@ -356,13 +357,13 @@ namespace BOTG_Refree
 			return TELEPORTED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.move(x, y);
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return unitDead(this.unit, affectedUnit, outcome);
 		}
@@ -380,14 +381,14 @@ namespace BOTG_Refree
 			return NONE;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			Unit toHit = getClosestUnitInRange(this.unit, this.unit.range, this.unit.team, false, this.unit);
 			if (toHit != null) this.unit.fireAttack(toHit);
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return unitStopped(this.unit, affectedUnit, outcome);
 		}
@@ -405,7 +406,7 @@ namespace BOTG_Refree
 			this.rounds = rounds;
 		}
 
-		override protected bool useAcrossRounds()
+		override internal bool useAcrossRounds()
 		{
 			rounds--;
 			if (rounds <= 0)
@@ -421,7 +422,7 @@ namespace BOTG_Refree
 			return NONE;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.moveSpeed -= moveSpeed;
 			unit.range -= range;
@@ -429,7 +430,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return unitDead(unit, affectedUnit, outcome);
 		}
@@ -445,21 +446,21 @@ namespace BOTG_Refree
 			this.mana = mana;
 		}
 
-		override protected bool useAcrossRounds() { return !unit.visible; }
+		override internal bool useAcrossRounds() { return !unit.visible; }
 
 		override internal int getOutcome()
 		{
 			return NONE;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.invisibleBySkill = false;
 			unit.visible = true;
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return !unitAlive(affectedUnit, outcome);
 		}
@@ -479,7 +480,7 @@ namespace BOTG_Refree
 			this.hitEnemies = hitEnemies;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			for (int i = Const.game.allUnits.Count - 1; i >= 0; i--)
 			{
@@ -498,7 +499,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return false;
 		}
@@ -513,7 +514,7 @@ namespace BOTG_Refree
 			rounds = t;
 		}
 
-		override protected bool useAcrossRounds()
+		override internal bool useAcrossRounds()
 		{
 			rounds--;
 			if (rounds <= 0)
@@ -526,14 +527,14 @@ namespace BOTG_Refree
 			return true;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.shield = 0;
 			//Const.viewController.addEffect(unit, unit, "shield", 0);
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return affectedUnit == this.unit && affectedUnit.shield <= 0;
 		}
@@ -548,7 +549,7 @@ namespace BOTG_Refree
 			rounds = t;
 		}
 
-		override protected bool useAcrossRounds()
+		override internal bool useAcrossRounds()
 		{
 			rounds--;
 			if (rounds <= 0)
@@ -561,7 +562,7 @@ namespace BOTG_Refree
 			return true;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.explosiveShield = 0;
 			//Const.viewController.addEffect(unit, unit, "shield", 0);
@@ -569,7 +570,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			if (affectedUnit == this.unit && this.unit.explosiveShield <= 0)
 			{
@@ -593,7 +594,7 @@ namespace BOTG_Refree
 			this.y = y;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			foreach (Unit target in Const.game.allUnits)
 			{
@@ -608,7 +609,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return false;
 		}
@@ -625,7 +626,7 @@ namespace BOTG_Refree
 			this.attacker = attacker;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			if (unit.isDead) return EMPTYLIST;
 
@@ -638,7 +639,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			return false;
 		}
@@ -668,7 +669,7 @@ namespace BOTG_Refree
 			return NONE;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			movingSpell.moveIgnoreEdges(currentTime);
 			double dist2 = movingSpell.Distance2(unit);
@@ -682,7 +683,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			if (currentTime > duration || !unitAlive(affectedUnit, outcome)) return true;
 
@@ -724,7 +725,7 @@ namespace BOTG_Refree
 			return STUNNED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 			movingSpell.moveIgnoreEdges(currentTime);
 			if (currentTime <= duration)
@@ -753,7 +754,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			if (affectedUnit == null)
 			{
@@ -804,7 +805,7 @@ namespace BOTG_Refree
 			return SPEEDCHANGED;
 		}
 
-		override protected List<Unit> onEventTime(double currentTime)
+		override internal List<Unit> onEventTime(double currentTime)
 		{
 
 			Unit closest = this.unit.findClosestOnOtherTeam();
@@ -826,7 +827,7 @@ namespace BOTG_Refree
 			return EMPTYLIST;
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			if (unitStopped(this.unit, affectedUnit, outcome))
 			{
@@ -898,7 +899,7 @@ namespace BOTG_Refree
 			return createListOfUnit();
 		}
 
-		override protected bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
+		override internal bool afterAnotherEvent(Unit affectedUnit, int outcome, double currentTime)
 		{
 			if (this.unit != affectedUnit && this.nextTarget != affectedUnit) return false;
 			if (unitStopped(this.unit, affectedUnit, outcome))
