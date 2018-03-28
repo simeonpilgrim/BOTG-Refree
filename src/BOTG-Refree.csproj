@@ -65,7 +65,6 @@
     <Compile Include="Tower.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Utilities.cs" />
-    <Compile Include="ViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

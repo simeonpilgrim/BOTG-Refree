@@ -34,7 +34,6 @@ namespace BOTG_Refree
 			{
 				if (Math.Abs(unit.vx) > Const.EPSILON || Math.Abs(unit.vy) > Const.EPSILON)
 				{
-					//Const.viewController.addEffect(unit, unit.targetPointOfMovement(), "movement", 1.0);
 					for (int i = events.Count - 1; i >= 0; i--)
 					{
 						Event _event = events[i];
@@ -50,7 +49,6 @@ namespace BOTG_Refree
 			{
 				if (isGameOver(players))
 				{
-					//Const.viewController.afterRound();
 					return;
 				}
 
@@ -94,16 +92,6 @@ namespace BOTG_Refree
 					List<Unit> affectedUnits = currentEvent.onEventTime(t);
 
 					handleAfterEvents(affectedUnits, currentEvent.getOutcome());
-					if (t > 0)
-					{
-						if ((currentEvent.getOutcome() & Event.SPEEDCHANGED) != 0 || (currentEvent.getOutcome() & Event.TELEPORTED) != 0)
-						{
-							foreach (Unit unit in affectedUnits)
-							{
-								//Const.viewController.updateViewForUnit(unit, t);
-							}
-						}
-					}
 				}
 
 				handleDamage();
@@ -134,7 +122,6 @@ namespace BOTG_Refree
 			}
 
 			updateVisibility(players);
-			//Const.viewController.afterRound();
 		}
 
 		private void handleDamage()
@@ -188,20 +175,10 @@ namespace BOTG_Refree
 				}
 
 				target.health = Math.Min(target.health - totalDamage, target.maxHealth);
-				// updates health of the unit in viewer
-				if (target is Hero)
-				{
-					//Const.viewController.updateEntityTooltip(target.sprite, "health: " + target.health+ "\nteam: " + target.team);
-				}
-				if (anyHero)
-				{
-					//Const.viewController.displayDamages(target, totalDamage, t);
-				}
 
 				if (target.health <= 0)
 				{
 					target.isDead = true;
-					//Const.viewController.updateEntityTooltip(target.sprite, "0");
 
 					UnitKilledState state = highestDamageUnit is Hero ? UnitKilledState.farmed : UnitKilledState.normal;
 
@@ -217,7 +194,6 @@ namespace BOTG_Refree
 					if (target is Hero)
 					{
 						// dead men tell no tales
-						//Const.viewController.addMessageToHeroHud((Hero)target, "");
 
 						if (highestDamageUnit is LaneUnit || highestDamageUnit is Tower)
 						{
@@ -248,7 +224,6 @@ namespace BOTG_Refree
 						highestDamageUnit.player.gold += target.goldValue;
 					System.Diagnostics.Debug.WriteLine($"{highestDamageUnit.player.player_id} killed {target.getType()}");
 					Const.game.allUnits.Remove(target);
-					//Const.viewController.killUnit(target, state);
 				}
 				else if (target is Creature)
 				{

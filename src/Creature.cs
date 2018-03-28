@@ -63,7 +63,6 @@ namespace BOTG_Refree
 			{
 				this.state = CreatureState.peacefull;
 				this.health = maxHealth;
-				//Const.viewController.addEffect(this, this, "default", 0);
 			}
 		}
 	}

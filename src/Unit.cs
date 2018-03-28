@@ -146,7 +146,6 @@ namespace BOTG_Refree
 			}
 
 			Const.game.events.Add(new DamageEvent(unit, this, attackTravelTime, this.damage));
-			//Const.viewController.addEffect(this, unit, "attack", attackTime);
 			//Creep aggro.
 			if (this is Hero && unit is Hero)
 			{
@@ -231,7 +230,6 @@ namespace BOTG_Refree
 			vx = (p.x - this.x) * coef;
 			vy = (p.y - this.y) * coef;
 			moving = true;
-			//Const.viewController.addEffect(this, p, "movement", timeToLocation);
 			if (speed > distance) {
 				Const.game.events.Add(new OnLocationReachedEvent(this, timeToLocation));
 			}

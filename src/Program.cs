@@ -287,7 +287,6 @@ namespace BOTG_Refree
         {
             // Read "output from player pipe
             var input = new List<string>();
-            //int lines_count = 2; // _ref.getExpectedOutputLineCountForPlayer(p.player_id))
             while (input.Count < lines_count)
             {
                 string line = pro.StandardOutput.ReadLine();

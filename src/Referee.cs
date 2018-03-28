@@ -7,8 +7,6 @@ namespace BOTG_Refree
 	public class Referee
 	{
 		public GameManager<Player> gameManager;
-		//private GraphicEntityModule entityManager;
-		//private TooltipModule tooltipModule;
 		private const int LostScore = -100000000;
 
 		public static void setupLeague(int league)
@@ -84,11 +82,9 @@ namespace BOTG_Refree
 			_params.Add("seed", seed.ToString());
 			Const.random = new Random(seed);
 
-			setupLeague(gameManager.getLeagueLevel() - 1); // gameManager.getLeagueLevel() - 1
+			setupLeague(gameManager.getLeagueLevel() - 1);
 
-			//Const.viewController.initialize(entityManager, tooltipModule, gameManager.getActivePlayers(), gameManager);
 			gameManager.setMaxTurns(Const.Rounds);
-			//entityManager.createSprite().setImage(Const.BACKGROUND).setAnchor(0).setZIndex(-1000);
 			Const.game.initialize(gameManager.getActivePlayers());
 
 			foreach (Unit unit in Const.game.allUnits)
@@ -103,7 +99,6 @@ namespace BOTG_Refree
 		public void gameTurn(int turn)
 		{
 			Const.game.beforeTurn(turn, gameManager.getActivePlayers());
-			//Const.viewController.initRound(turn);
 
 			if (turn == 0) sendInitialData();
 
@@ -147,8 +142,6 @@ namespace BOTG_Refree
 						string msg;
 						if (e is TimeoutException)
 							msg = " timeout";
-						//else if (e is NumberFormatException || e is IndexOutOfBoundsException)
-						//	msg = " Invalid input. Expected a number. Input was: " + strinOutputs;
 						else
 							msg = " " + e.Message;
 						player.deactivate(player.getNicknameToken() + msg);
@@ -176,42 +169,15 @@ namespace BOTG_Refree
 				}
 			}
 
-			var activePlayers = gameManager.getActivePlayers();
-			if (turn == Const.Rounds - 1 && activePlayers.Count == 2)
-			{
-				int score0 = activePlayers[0].getScore();
-				int score1 = activePlayers[1].getScore();
-				if (score0 == score1)
-				{
-					//gameManager.addTooltip(new Tooltip(0, gameManager.getActivePlayers()[0].getNicknameToken() + " draw"));
-					//gameManager.addTooltip(new Tooltip(1, gameManager.getActivePlayers()[1].getNicknameToken() + " draw"));
-				}
-				else if (score0 > score1)
-				{
-					//gameManager.addTooltip(new Tooltip(1, gameManager.getActivePlayers()[1].getNicknameToken() + " loses. Has less creep kills + denies"));
-				}
-				else
-				{
-					//gameManager.addTooltip(new Tooltip(0, gameManager.getActivePlayers()[0].getNicknameToken() + " loses. Has less creep kills + denies"));
-				}
-			}
-			if (activePlayers.Count < 2)
+			if (gameManager.getActivePlayers().Count < 2)
 			{
 				gameManager.endGame();
-			}
-			else
-			{
-				//foreach (string msg in Const.viewController.summaries) {
-				//	gameManager.addToGameSummary(msg);
-				//}
 			}
 		}
 
 		private bool shouldSendToPlayer(Player player, Unit u)
 		{
 			bool r = !u.isDead && (u.team == player.getIndex() || u.visible || u.becomingInvis || !(u is Hero));
-			//if (player.player_id == 0)
-			//	System.Diagnostics.Debug.WriteLine($"sstp {player.player_id}: {r} = {!u.isDead} {u.team == player.getIndex()} {u.visible} {u.becomingInvis} {!(u is Hero)}");
 			return !u.isDead && (u.team == player.getIndex() || u.visible || u.becomingInvis || !(u is Hero));
 		}
 

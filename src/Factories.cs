@@ -20,13 +20,7 @@ namespace BOTG_Refree
 			Point target = team == 1 ? Const.TOWERTEAM0 : Const.TOWERTEAM1;
 			LaneUnit unit = new LaneUnit(spawn.x + 50 * type * (team * 2 - 1), spawn.y + number * 50, 1, team, 150, target, player);
 			unit.targetPoint = new Point(unit.targetPoint.x, unit.y); // Move in a straight line
-																	  //Need more data?
-																	  //unit.skin = "racoon-";
-																	  //if (team == 1) {
-																	  //    unit.skin += "blue";
-																	  //} else {
-																	  //    unit.skin += "red";
-																	  //}
+																	  
 
 			if (type == 0)
 			{
@@ -34,7 +28,6 @@ namespace BOTG_Refree
 				unit.damage = 25;
 				unit.range = 90;
 				unit.goldValue = Const.MELEE_UNIT_GOLD_VALUE;
-				//unit.skin += ".png";
 			}
 			else
 			{
@@ -42,11 +35,9 @@ namespace BOTG_Refree
 				unit.damage = 35;
 				unit.range = 300;
 				unit.goldValue = Const.RANGER_UNIT_GOLD_VALUE;
-				//unit.skin += ".png";
 			}
 			unit.attackTime = 0.2;
 
-			//Const.viewController.addSprite(unit, team);
 			return unit;
 		}
 
@@ -69,7 +60,6 @@ namespace BOTG_Refree
 				hero.health = hero.maxHealth = 820;
 				hero.mana = hero.maxMana = 200;
 				hero.damage = 60;
-				//hero.skin = Const.IRONMAN;
 				hero.range = 270;
 				hero.manaregeneration = 2;
 				hero.skills[0] = new Skills.BlinkSkill(hero, 16, "BLINK", 0.05, true, 200, 3);
@@ -82,7 +72,6 @@ namespace BOTG_Refree
 				hero.health = hero.maxHealth = 1400;
 				hero.mana = hero.maxMana = 155;
 				hero.damage = 65;
-				//hero.skin = Const.VALKYRIE;
 				hero.range = 130;
 				hero.manaregeneration = 2;
 				hero.skills[0] = new Skills.FlipSkill(hero, 20, "SPEARFLIP", 0.1, 155, 3);
@@ -95,7 +84,6 @@ namespace BOTG_Refree
 				hero.health = hero.maxHealth = 1380;
 				hero.mana = hero.maxMana = 100;
 				hero.damage = 80;
-				//hero.skin = Const.DEADPOOL;
 				hero.range = 110;
 				hero.manaregeneration = 1;
 				hero.skills[0] = new Skills.CounterSkill(hero, 40, "COUNTER", 1, 350, 5);
@@ -108,7 +96,6 @@ namespace BOTG_Refree
 				hero.health = hero.maxHealth = 955;
 				hero.mana = hero.maxMana = 300;
 				hero.damage = 50;
-				//hero.skin = Const.DOCTOR_STRANGE;
 				hero.range = 245;
 				hero.manaregeneration = 2;
 				hero.skills[0] = new Skills.AOEHealSkill(hero, 50, "AOEHEAL", 0.01, 250, 100, "HEALING-BALL.png", 6);
@@ -121,7 +108,6 @@ namespace BOTG_Refree
 				hero.health = hero.maxHealth = 1450;
 				hero.mana = hero.maxMana = 90;
 				hero.damage = 80;
-				//hero.skin = Const.HULK;
 				hero.range = 95;
 				hero.manaregeneration = 1;
 				hero.skills[0] = new Skills.ChargeSkill(hero, 20, "CHARGE", 0.05, 300, 4);
@@ -141,7 +127,6 @@ namespace BOTG_Refree
 				hero.skills[2] = new Skills.EmptySkill();
 			}
 
-			//Const.viewController.addSprite(hero, team);
 			return hero;
 		}
 
@@ -149,23 +134,17 @@ namespace BOTG_Refree
 		{
 			Point spawn = team == 0 ? Const.TOWERTEAM0 : Const.TOWERTEAM1;
 			Tower tower = new Tower(spawn.x, spawn.y, (int)(Const.TOWERHEALTH * Const.TOWERHEALTHSCALE), team, player);
-			//tower.skin = team == 1 ? Const.BLUETOWER : Const.REDTOWER;
 			tower.range = 400;
 			tower.damage = Const.TOWERDAMAGE;
 			player.tower = tower;
 			tower.attackTime = 0.2;
 
-			//Const.viewController.addSprite(tower, team);
 			return tower;
 		}
 
 		public static Bush generateBush(Point point)
 		{
-			Bush bush = new Bush(point.x, point.y);
-			// bush.skin = Const.BUSH;
-
-			//Const.viewController.addObstacle(bush);
-			return bush;
+			return new Bush(point.x, point.y);
 		}
 
 		public static Creature generateCreature(Point point, double amplitude)
@@ -178,7 +157,6 @@ namespace BOTG_Refree
 			creature.moveSpeed = 250;
 			creature.goldValue = (int)(Const.NEUTRALGOLD * amplitude);
 			creature.creatureType = "GROOT";
-			//Const.viewController.addSprite(creature, -1, (1-1.0/3.0)+amplitude/3);
 			creature.attackTime = 0.2;
 
 			return creature;

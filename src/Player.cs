@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace BOTG_Refree
@@ -56,8 +55,6 @@ namespace BOTG_Refree
 			try {
 
 				string message = roundOutputSplitted.Length > 1 ? roundOutputSplitted[1] : "";
-				//Const.viewController.addMessageToHeroHud(hero, message);
-
 				string[] outputValues = roundOutputSplitted[0].Split(' ');
 				string command = outputValues[0];
 				int arguments = outputValues.Length - 1;
@@ -116,7 +113,6 @@ namespace BOTG_Refree
 					} else {
 						hero.addItem(item);
 						gold -= item.cost;
-						//Const.viewController.addItem(hero, item);
 					}
 				}
 
@@ -129,7 +125,6 @@ namespace BOTG_Refree
 					} else {
 						hero.removeItem(foundItem);
 						gold += Utilities.round(foundItem.cost * Const.SELLITEMREFUND);
-						//Const.viewController.removeItem(hero, foundItem);
 					}
 				}
 
@@ -153,12 +148,10 @@ namespace BOTG_Refree
 								if (outputValues.Length == 3 && skill.getTargetType() == SkillType.POSITION) {
 									x = double.Parse(outputValues[1]);
 									y = double.Parse(outputValues[2]);
-									//Const.viewController.addEffect(hero, new Point(x,y), "spell", 0);
 								}
 								else if (outputValues.Length == 2 && skill.getTargetType() == SkillType.UNIT) {
 									unitId = int.Parse(outputValues[1]);
 									Unit unit = Const.game.getUnitOfId(unitId);
-									//Const.viewController.addEffect(hero, unit, "spell", 0);
 
 									if (!hero.allowedToTarget(unit) || unit is Tower) {
 										printError(hero.heroType + " can't target unit with spell. Either invisible or not existing.");
@@ -213,7 +206,6 @@ namespace BOTG_Refree
 		}
 
 		private void printError(string message) {
-			//Const.viewController.addSummary(message);
 			Console.WriteLine(message);
 		}
 	}

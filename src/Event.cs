@@ -80,7 +80,6 @@ namespace BOTG_Refree
 			unit.vx = (targetPoint.x - unit.x) * coef;
 			unit.vy = (targetPoint.y - unit.y) * coef;
 			unit.moving = true;
-			//Const.viewController.addEffect(unit, targetPoint, "movement", 1.0);
 		}
 
 		protected bool hasAnyOutcome(int outcome, int expected1, int expected2)
@@ -152,8 +151,6 @@ namespace BOTG_Refree
 			unit.vx = unit.forceVX;
 			unit.vy = unit.forceVY;
 			unit.moving = false;
-			//if(currentTime < 0.99)
-			//Const.viewController.addEffect(unit, new Point(unit.x+unit.vx, unit.y+unit.vy), "default", 1.0);
 
 			return createListOfUnit();
 		}
@@ -329,7 +326,6 @@ namespace BOTG_Refree
 		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.stunTime = Math.Max(unit.stunTime, stunTime);
-			//Const.viewController.addEffect(unit, null, "stun", stunTime);
 			unit.vx = unit.forceVX;
 			unit.vy = unit.forceVY;
 			return createListOfUnit();
@@ -396,7 +392,6 @@ namespace BOTG_Refree
 
 	public class PowerUpEvent : Event
 	{
-		//int x, y;
 		int moveSpeed, range, damage, rounds;
 		public PowerUpEvent(Unit unit, int moveSpeed, int range, int damage, int rounds) :
 			  base(unit, Const.MAXINT)
@@ -439,7 +434,6 @@ namespace BOTG_Refree
 
 	public class StealthEvent : Event
 	{
-		//int x, y;
 		double mana;
 		public StealthEvent(Unit unit, double t, double mana) :
 			 base(unit, t)
@@ -521,7 +515,6 @@ namespace BOTG_Refree
 			if (rounds <= 0)
 			{
 				unit.shield = 0;
-				//Const.viewController.addEffect(unit, unit, "shield", 0);
 				return false;
 			}
 
@@ -531,7 +524,6 @@ namespace BOTG_Refree
 		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.shield = 0;
-			//Const.viewController.addEffect(unit, unit, "shield", 0);
 			return EMPTYLIST;
 		}
 
@@ -556,7 +548,6 @@ namespace BOTG_Refree
 			if (rounds <= 0)
 			{
 				unit.explosiveShield = 0;
-				//Const.viewController.addEffect(unit, unit, "shield", 0);
 				return false;
 			}
 
@@ -566,7 +557,6 @@ namespace BOTG_Refree
 		override internal List<Unit> onEventTime(double currentTime)
 		{
 			unit.explosiveShield = 0;
-			//Const.viewController.addEffect(unit, unit, "shield", 0);
 
 			return EMPTYLIST;
 		}
@@ -576,7 +566,6 @@ namespace BOTG_Refree
 			if (affectedUnit == this.unit && this.unit.explosiveShield <= 0)
 			{
 				Const.game.events.Add(new ExplosionEvent(affectedUnit, 0, this.unit.x, this.unit.y));
-				//Const.viewController.addEffect(unit, null, "shieldexplosion", 0);
 
 				return true;
 			}
@@ -888,8 +877,6 @@ namespace BOTG_Refree
 		{
 			this.unit.vx = unit.forceVX;
 			this.unit.vy = unit.forceVY;
-			//if(currentTime < 0.99)
-			//Const.viewController.addEffect(unit, new Point(unit.x+unit.vx, unit.y+unit.vy), "default", 1.0);
 
 			if (nextTarget.isDead || unitStopped(unit))
 			{

@@ -12,16 +12,13 @@ namespace BOTG_Refree
         public int mana;
         public int manaregeneration;
         public int maxMana;
-        //int channeling;
         public int visibilityTimer;
         public List<Item> items = new List<Item>();
-        //string avatar = Const.MAGEAVATAR;
 
         public Hero(double x, double y, int health, int team, int moveSpeed, Player player, string heroType) : base(x, y, health, team, moveSpeed, player)
         {
             this.goldValue = Const.HERO_GOLD_VALUE;
             this.heroType = heroType;
-            //this.channeling = 0;
         }
 
         override internal void afterRound() {

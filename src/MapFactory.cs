@@ -243,7 +243,6 @@ namespace BOTG_Refree
 				totalCost += val * getPrice(stat);
 			}
 
-			// return (int)Math.ceil(totalCost-(totalCost*totalCost/5000)) ;
 			return (int)Math.Min(Math.Max(Math.Ceiling(totalCost / 2.5), Math.Ceiling(totalCost - (totalCost * totalCost / 5000))), 1200);
 		}
 

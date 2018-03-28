@@ -88,9 +88,7 @@ namespace BOTG_Refree
         public const int EXPLOSIVESHIELDDAMAGE = 50;
 
         // LANCER
-        //public static int POWERUPMOVESPEED = 0;
         public const double POWERUPDAMAGEINCREASE = 0.3;
-        //public static int POWERUPRANGE = 10;
 
         //GOLD UNIT VALUES
         public const int MELEE_UNIT_GOLD_VALUE = 30;
