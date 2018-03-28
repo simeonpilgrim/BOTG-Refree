@@ -73,7 +73,7 @@ namespace BOTG_Refree
 			int seed = 42;
 			try
 			{
-				seed = int.Parse(_params.getProperty("seed", "42"));
+				seed = int.Parse(_params.getProperty("seed", ((int)DateTime.Now.Ticks).ToString()));
 			}
 			catch (Exception /*e*/)
 			{
