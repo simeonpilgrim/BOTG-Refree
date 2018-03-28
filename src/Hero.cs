@@ -12,19 +12,19 @@ namespace BOTG_Refree
         public int mana;
         public int manaregeneration;
         public int maxMana;
-        int channeling;
+        //int channeling;
         public int visibilityTimer;
         public List<Item> items = new List<Item>();
-        string avatar = Const.MAGEAVATAR;
+        //string avatar = Const.MAGEAVATAR;
 
         public Hero(double x, double y, int health, int team, int moveSpeed, Player player, string heroType) : base(x, y, health, team, moveSpeed, player)
         {
             this.goldValue = Const.HERO_GOLD_VALUE;
             this.heroType = heroType;
-            this.channeling = 0;
+            //this.channeling = 0;
         }
 
-        internal void afterRound() {
+        override internal void afterRound() {
             base.afterRound();
             visibilityTimer = Math.Max(0, visibilityTimer - 1);
             mana += manaregeneration;
@@ -46,7 +46,12 @@ namespace BOTG_Refree
             }
         }
 
-        internal void removeItem(Item item) {
+		internal override void findAction(List<Unit> allUnits)
+		{
+			// this function is for Creatures, Towers, LaneUnits, not Hero's
+		}
+
+		internal void removeItem(Item item) {
             if (!items.Contains(item)) return;
             items.Remove(item);
             addCharacteristics(item, -1);
@@ -59,7 +64,7 @@ namespace BOTG_Refree
                 try {
                     FieldInfo f = c.GetField(kv.Key);
                     f.SetValue(this, (int)f.GetValue(this) + kv.Value * amplitude);
-                } catch (Exception e) {
+                } catch (Exception /*e*/) {
                 }
             }
 
@@ -68,8 +73,11 @@ namespace BOTG_Refree
             {
                 try {
                     FieldInfo f = c2.GetField(kv.Key);
-                    f.SetValue(this, (int)f.GetValue(this) + kv.Value * amplitude);
-                } catch (Exception e) {
+					if (f != null)
+					{
+						f.SetValue(this, (int)f.GetValue(this) + kv.Value * amplitude);
+					}
+                } catch (Exception /*e*/) {
                 }
             }
 

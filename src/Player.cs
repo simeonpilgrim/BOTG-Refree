@@ -185,7 +185,8 @@ namespace BOTG_Refree
 				} else {
 					printError(" tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
 				}
-			} catch (Exception e) {
+			} catch (Exception /*e*/)
+			{
 				printError(" tried to use an invalid command. Invalid parameters or name. Command was: " + roundOutputSplitted[0]);
 			}
 		}
@@ -213,6 +214,7 @@ namespace BOTG_Refree
 
 		private void printError(string message) {
 			//Const.viewController.addSummary(message);
+			Console.WriteLine(message);
 		}
 	}
 }

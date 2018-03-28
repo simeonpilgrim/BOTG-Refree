@@ -24,15 +24,9 @@ namespace BOTG_Refree
 			// Make dummies do their actions
 			foreach (Unit unit in allUnits)
 			{
-				if (unit.stunTime > 0) continue;
-				if (unit is LaneUnit)
-					((LaneUnit)unit).findAction();
-
-				else if (unit is Tower)
-					((Tower)unit).findAction(allUnits);
-
-				else if (unit is Creature)
-					((Creature)unit).findAction(allUnits);
+				if (unit.stunTime > 0)
+					continue;
+				unit.findAction(allUnits);
 			}
 
 			// Inform events about speed changes of moving units.
@@ -168,7 +162,7 @@ namespace BOTG_Refree
 					if (dmg.attacker is Hero && target.player != null && target.player != dmg.attacker.player)
 					{
 						((Hero)dmg.attacker).visibilityTimer = 2;
-						((Hero)dmg.attacker).visible = true;
+						dmg.attacker.visible = true;
 						dmg.attacker.invisibleBySkill = false;
 					}
 					else if (dmg.attacker is Hero)
@@ -252,11 +246,9 @@ namespace BOTG_Refree
 
 					if (highestDamageUnit.player != null)
 						highestDamageUnit.player.gold += target.goldValue;
-
+					System.Diagnostics.Debug.WriteLine($"{highestDamageUnit.player.player_id} killed {target.getType()}");
 					Const.game.allUnits.Remove(target);
 					//Const.viewController.killUnit(target, state);
-
-
 				}
 				else if (target is Creature)
 				{
@@ -438,7 +430,7 @@ namespace BOTG_Refree
 			}
 			else
 			{
-				spawns = Const.mapFactory.generateSpawns();
+				spawns = MapFactory.generateSpawns();
 				forestCampCount = spawns.Length;
 				creatures = new Creature[forestCampCount];
 				amplitude = new double[forestCampCount];
@@ -446,7 +438,7 @@ namespace BOTG_Refree
 					amplitude[i] = 1.0;
 			}
 
-			List<Bush> tempBushes = Const.mapFactory.generateBushes(spawns);
+			List<Bush> tempBushes = MapFactory.generateBushes(spawns);
 
 			// In lower leagues we ignore bushes. But lets add the visuals because it's pretty =)
 			if (!Const.IGNOREBUSHES) this.bushes.AddRange(tempBushes);

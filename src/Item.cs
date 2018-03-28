@@ -8,14 +8,14 @@ namespace BOTG_Refree
         public Dictionary<string, int> stats;
         public int cost;
         public bool isPotion;
-        string skin;
+        //string skin;
 
-        public Item(string name, Dictionary<string, int> stats, int cost, string skin, bool isPotion)
+        public Item(string name, Dictionary<string, int> stats, int cost, bool isPotion)
         {
             this.name = name;
             this.stats = fillEmptyStats(stats);
             this.cost = cost;
-            this.skin = skin;
+            //.skin = skin;
             this.isPotion = isPotion;
         }
 

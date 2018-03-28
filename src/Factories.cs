@@ -35,7 +35,8 @@ namespace BOTG_Refree
 				unit.range = 90;
 				unit.goldValue = Const.MELEE_UNIT_GOLD_VALUE;
 				//unit.skin += ".png";
-			} else
+			}
+			else
 			{
 				unit.health = unit.maxHealth = 250;
 				unit.damage = 35;
@@ -53,9 +54,6 @@ namespace BOTG_Refree
 		{
 			int team = player.getIndex();
 			Hero hero = new Hero(spawn.x, spawn.y, 1, team, 200, player, type);
-			hero.skills[0] = new Skills.EmptySkill();
-			hero.skills[1] = new Skills.EmptySkill();
-			hero.skills[2] = new Skills.EmptySkill();
 
 			// Since stub doesn't support IFs, just take heroes
 			if (type.StartsWith("WAIT"))
@@ -78,7 +76,8 @@ namespace BOTG_Refree
 				hero.skills[1] = new Skills.LineSkill(hero, 60, "FIREBALL", 900, 50, 0.9, 6);
 				hero.skills[2] = new Skills.BurningGround(hero, 50, "BURNING", 0.01, 250, 100, "ENERGY-BALL.png", 5);
 
-			} else if (type == HeroType.VALKYRIE.ToString())
+			}
+			else if (type == HeroType.VALKYRIE.ToString())
 			{
 				hero.health = hero.maxHealth = 1400;
 				hero.mana = hero.maxMana = 155;
@@ -90,7 +89,8 @@ namespace BOTG_Refree
 				hero.skills[1] = new Skills.JumpSkill(hero, 35, "JUMP", 0.15, 250, 3);
 				hero.skills[2] = new Skills.PowerUpSkill(hero, 50, "POWERUP", 4, 0, 7);
 
-			} else if (type == HeroType.DEADPOOL.ToString())
+			}
+			else if (type == HeroType.DEADPOOL.ToString())
 			{
 				hero.health = hero.maxHealth = 1380;
 				hero.mana = hero.maxMana = 100;
@@ -102,7 +102,8 @@ namespace BOTG_Refree
 				hero.skills[1] = new Skills.WireHookSkill(hero, 50, "WIRE", 200, 25, 2, 0.3, 9);
 				hero.skills[2] = new Skills.StealthSkill(hero, 30, "STEALTH", 0, 5, 6);
 
-			} else if (type == HeroType.DOCTOR_STRANGE.ToString())
+			}
+			else if (type == HeroType.DOCTOR_STRANGE.ToString())
 			{
 				hero.health = hero.maxHealth = 955;
 				hero.mana = hero.maxMana = 300;
@@ -114,7 +115,8 @@ namespace BOTG_Refree
 				hero.skills[1] = new Skills.ShieldSkill(hero, 40, "SHIELD", 3, 500, 6);
 				hero.skills[2] = new Skills.PullSkill(hero, 40, "PULL", 0.3, 400, 5, 0.1);
 
-			} else if (type == HeroType.HULK.ToString())
+			}
+			else if (type == HeroType.HULK.ToString())
 			{
 				hero.health = hero.maxHealth = 1450;
 				hero.mana = hero.maxMana = 90;
@@ -126,7 +128,8 @@ namespace BOTG_Refree
 				hero.skills[1] = new Skills.ExplosiveSkill(hero, 30, "EXPLOSIVESHIELD", 4, 100, 8);
 				hero.skills[2] = new Skills.BashSkill(hero, 40, "BASH", 2, 150, 10);
 
-			} else
+			}
+			else
 			{
 				throw new InvalidInputException("Hero not supported", type);
 			}
@@ -183,8 +186,9 @@ namespace BOTG_Refree
 
 		public static Dictionary<string, Item> createItems(int playersGold)
 		{
-			if (Const.IGNOREITEMS) return new Dictionary<string, Item>();
-			return Const.mapFactory.generateItems(playersGold);
+			if (Const.IGNOREITEMS)
+				return new Dictionary<string, Item>();
+			return MapFactory.generateItems(playersGold);
 		}
 	}
 }

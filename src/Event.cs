@@ -96,7 +96,7 @@ namespace BOTG_Refree
 
 		protected Unit getClosestUnitInRange(Point root, double range, int team, bool allowInvis, Unit ignoredUnit)
 		{
-			double closestDist = Const.MAXDOUBLE;
+			double closestDist = double.MaxValue;
 			Unit closest = null;
 			foreach (Unit unit in Const.game.allUnits)
 			{
@@ -396,7 +396,8 @@ namespace BOTG_Refree
 
 	public class PowerUpEvent : Event
 	{
-		int x, y, moveSpeed, range, damage, rounds;
+		//int x, y;
+		int moveSpeed, range, damage, rounds;
 		public PowerUpEvent(Unit unit, int moveSpeed, int range, int damage, int rounds) :
 			  base(unit, Const.MAXINT)
 		{
@@ -438,7 +439,7 @@ namespace BOTG_Refree
 
 	public class StealthEvent : Event
 	{
-		int x, y;
+		//int x, y;
 		double mana;
 		public StealthEvent(Unit unit, double t, double mana) :
 			 base(unit, t)

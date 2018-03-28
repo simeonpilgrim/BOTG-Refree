@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace BOTG_Refree
 {
-    public class Referee
+	public class Referee
 	{
 		public GameManager<Player> gameManager;
 		//private GraphicEntityModule entityManager;
@@ -15,57 +15,57 @@ namespace BOTG_Refree
 		{
 			switch (league)
 			{
-			case 0:
-				Const.IGNOREITEMS = true;
-				Const.HEROCOUNT = 1;
-				Const.IGNORESKILLS = true;
-				Const.REMOVEFORESTCREATURES = true;
-				Const.TOWERHEALTHSCALE = 0.5;
-				Const.IGNOREBUSHES = true;
-				Const.Rounds = 200;
-				Const.TOWERDAMAGE = 1;
-				Const.MELEE_UNIT_COUNT = 0;
-				Const.RANGED_UNIT_COUNT = 0;
-				break;
-			case 1:
-				Const.HEROCOUNT = 1;
-				Const.IGNORESKILLS = true;
-				Const.REMOVEFORESTCREATURES = true;
-				Const.TOWERHEALTHSCALE = 0.5;
-				Const.IGNOREBUSHES = true;
-				Const.Rounds = 200;
-				Const.TOWERDAMAGE = 1;
-				Const.MELEE_UNIT_COUNT = 0;
-				Const.RANGED_UNIT_COUNT = 0;
-				break;
-			case 2:
-				Const.HEROCOUNT = 1;
-				Const.IGNORESKILLS = true;
-				Const.REMOVEFORESTCREATURES = true;
-				Const.TOWERHEALTHSCALE = 0.5;
-				Const.IGNOREBUSHES = true;
-				Const.Rounds = 200;
-				Const.TOWERDAMAGE = 1;
-				break;
-			case 3:
-				Const.HEROCOUNT = 1;
-				Const.IGNORESKILLS = true;
-				Const.REMOVEFORESTCREATURES = true;
-				Const.TOWERHEALTHSCALE = 0.5;
-				Const.Rounds = 200;
-				break;
-			case 4:
-				Const.HEROCOUNT = 1;
-				Const.IGNORESKILLS = true;
-				Const.Rounds = 200;
-				break;
-			case 5:
-				Const.IGNORESKILLS = true;
-				Const.Rounds = 200;
-				break;
-			default:
-				//normal.
-				break;
+				case 0:
+					Const.IGNOREITEMS = true;
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.IGNOREBUSHES = true;
+					Const.Rounds = 200;
+					Const.TOWERDAMAGE = 1;
+					Const.MELEE_UNIT_COUNT = 0;
+					Const.RANGED_UNIT_COUNT = 0;
+					break;
+				case 1:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.IGNOREBUSHES = true;
+					Const.Rounds = 200;
+					Const.TOWERDAMAGE = 1;
+					Const.MELEE_UNIT_COUNT = 0;
+					Const.RANGED_UNIT_COUNT = 0;
+					break;
+				case 2:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.IGNOREBUSHES = true;
+					Const.Rounds = 200;
+					Const.TOWERDAMAGE = 1;
+					break;
+				case 3:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.REMOVEFORESTCREATURES = true;
+					Const.TOWERHEALTHSCALE = 0.5;
+					Const.Rounds = 200;
+					break;
+				case 4:
+					Const.HEROCOUNT = 1;
+					Const.IGNORESKILLS = true;
+					Const.Rounds = 200;
+					break;
+				case 5:
+					Const.IGNORESKILLS = true;
+					Const.Rounds = 200;
+					break;
+				default:
+					//normal.
+					break;
 			}
 		}
 
@@ -76,11 +76,12 @@ namespace BOTG_Refree
 			try
 			{
 				seed = int.Parse(_params.getProperty("seed", "42"));
-			} catch (Exception e)
+			}
+			catch (Exception /*e*/)
 			{
 				seed = new Random().Next();
 			}
-            _params.Add("seed", seed.ToString());
+			_params.Add("seed", seed.ToString());
 			Const.random = new Random(seed);
 
 			setupLeague(gameManager.getLeagueLevel() - 1); // gameManager.getLeagueLevel() - 1
@@ -92,7 +93,8 @@ namespace BOTG_Refree
 
 			foreach (Unit unit in Const.game.allUnits)
 			{
-				if (unit is Tower) gameManager.getActivePlayers()[unit.team].tower = (Tower)unit;
+				if (unit is Tower)
+					gameManager.getActivePlayers()[unit.team].tower = (Tower)unit;
 			}
 
 			return _params;
@@ -113,14 +115,12 @@ namespace BOTG_Refree
 				int hc = (turn >= Const.HEROCOUNT) ? player.heroes.Where(h => !h.isDead).Count() : (turn - Const.HEROCOUNT);
 
 				player.sendInputLine($"{hc}");
-				player.sendInputLine($"{(Const.game.allUnits.Where(u => shouldSendToPlayer(player, u)).Count())}");
+				var sendingUnits = Const.game.allUnits.Where(u => shouldSendToPlayer(player, u));
+				player.sendInputLine($"{sendingUnits.Count()}");
 
-				foreach (Unit unit in Const.game.allUnits)
+				foreach (Unit unit in sendingUnits)
 				{
-					if (shouldSendToPlayer(player, unit))
-					{
-						player.sendInputLine(unit.getPlayerString());
-					}
+					player.sendInputLine(unit.getPlayerString());
 				}
 			}
 
@@ -132,14 +132,16 @@ namespace BOTG_Refree
 				{
 					gameManager.setFrameDuration(100);
 					pickHero(player);
-				} else
+				}
+				else
 				{
 					gameManager.setFrameDuration(1000);
 					try
 					{
-						string[] outputs = player.getOutputs();
+						string[] outputs = player.getOutputs(player.heroesAlive());
 						player.handlePlayerOutputs(outputs);
-					} catch (Exception e)
+					}
+					catch (Exception e)
 					{
 						player.setScore(LostScore);
 						string msg;
@@ -154,7 +156,8 @@ namespace BOTG_Refree
 				}
 			}
 
-			if (gameManager.getActivePlayers().Count == 2) Const.game.handleTurn(gameManager.getActivePlayers());
+			if (gameManager.getActivePlayers().Count == 2)
+				Const.game.handleTurn(gameManager.getActivePlayers());
 
 
 
@@ -166,32 +169,37 @@ namespace BOTG_Refree
 				{
 					player.setScore(LostScore);
 					player.deactivate(player.getNicknameToken() + " lost. " + (deadHeroes ? "All heroes dead" : "Tower destroyed"));
-				} else
+				}
+				else
 				{
 					player.setScore(player.unitKills + player.denies);
 				}
 			}
 
-			if (turn == Const.Rounds - 1 && gameManager.getActivePlayers().Count == 2)
+			var activePlayers = gameManager.getActivePlayers();
+			if (turn == Const.Rounds - 1 && activePlayers.Count == 2)
 			{
-				int score0 = gameManager.getActivePlayers()[0].getScore();
-				int score1 = gameManager.getActivePlayers()[1].getScore();
+				int score0 = activePlayers[0].getScore();
+				int score1 = activePlayers[1].getScore();
 				if (score0 == score1)
 				{
 					//gameManager.addTooltip(new Tooltip(0, gameManager.getActivePlayers()[0].getNicknameToken() + " draw"));
 					//gameManager.addTooltip(new Tooltip(1, gameManager.getActivePlayers()[1].getNicknameToken() + " draw"));
-				} else if (score0 > score1)
+				}
+				else if (score0 > score1)
 				{
 					//gameManager.addTooltip(new Tooltip(1, gameManager.getActivePlayers()[1].getNicknameToken() + " loses. Has less creep kills + denies"));
-				} else
+				}
+				else
 				{
 					//gameManager.addTooltip(new Tooltip(0, gameManager.getActivePlayers()[0].getNicknameToken() + " loses. Has less creep kills + denies"));
 				}
 			}
-			if (gameManager.getActivePlayers().Count < 2)
+			if (activePlayers.Count < 2)
 			{
 				gameManager.endGame();
-			} else
+			}
+			else
 			{
 				//foreach (string msg in Const.viewController.summaries) {
 				//	gameManager.addToGameSummary(msg);
@@ -201,6 +209,9 @@ namespace BOTG_Refree
 
 		private bool shouldSendToPlayer(Player player, Unit u)
 		{
+			bool r = !u.isDead && (u.team == player.getIndex() || u.visible || u.becomingInvis || !(u is Hero));
+			//if (player.player_id == 0)
+			//	System.Diagnostics.Debug.WriteLine($"sstp {player.player_id}: {r} = {!u.isDead} {u.team == player.getIndex()} {u.visible} {u.becomingInvis} {!(u is Hero)}");
 			return !u.isDead && (u.team == player.getIndex() || u.visible || u.becomingInvis || !(u is Hero));
 		}
 
@@ -209,36 +220,38 @@ namespace BOTG_Refree
 			return gameManager.getActivePlayers()[1 - player.getIndex()];
 		}
 
-        private void pickHero(Player player)
-        {
-            string output = "";
-            try
-            {
-                Point spawn = player.getIndex() == 0 ? (player.heroes.Count == 0 ? Const.HEROSPAWNTEAM0 : Const.HEROSPAWNTEAM0HERO2) : (player.heroes.Count == 0 ? Const.HEROSPAWNTEAM1 : Const.HEROSPAWNTEAM1HERO2);
-                output = player.getOutputs()[0];
-                if (player.heroes.Count > 0 && player.heroes[0].heroType == output)
-                {
-                    player.setScore(LostScore);
-                    player.deactivate(player.getNicknameToken() + " tried to pick a hero already owned. Can't have duplicate hero.");
-                    gameManager.addToGameSummary(player.getNicknameToken() + " tried to pick a hero already owned. Can't have duplicate hero.");
-                    return;
-                } else
-                {
-                    Hero hero = Factories.generateHero(output, player, spawn);
-                    player.addHero(hero);
-                    Const.game.allUnits.Add(hero);
-                }
-            } catch (Exception e)
-            {
-                player.setScore(LostScore);
-                string msg;
-                if (e is TimeoutException)
-                    msg = " timeout";
-                else
-                    msg = " supplied invalid input. " + e.Message;
-                player.deactivate(player.getNicknameToken() + msg);
-            }
-        }
+		private void pickHero(Player player)
+		{
+			string output = "";
+			try
+			{
+				Point spawn = player.getIndex() == 0 ? (player.heroes.Count == 0 ? Const.HEROSPAWNTEAM0 : Const.HEROSPAWNTEAM0HERO2) : (player.heroes.Count == 0 ? Const.HEROSPAWNTEAM1 : Const.HEROSPAWNTEAM1HERO2);
+				output = player.getOutputs(1)[0];
+				if (player.heroes.Count > 0 && player.heroes[0].heroType == output)
+				{
+					player.setScore(LostScore);
+					player.deactivate(player.getNicknameToken() + " tried to pick a hero already owned. Can't have duplicate hero.");
+					gameManager.addToGameSummary(player.getNicknameToken() + " tried to pick a hero already owned. Can't have duplicate hero.");
+					return;
+				}
+				else
+				{
+					Hero hero = Factories.generateHero(output, player, spawn);
+					player.addHero(hero);
+					Const.game.allUnits.Add(hero);
+				}
+			}
+			catch (Exception e)
+			{
+				player.setScore(LostScore);
+				string msg;
+				if (e is TimeoutException)
+					msg = " timeout";
+				else
+					msg = " supplied invalid input. " + e.Message;
+				player.deactivate(player.getNicknameToken() + msg);
+			}
+		}
 
 		private void sendInitialData()
 		{

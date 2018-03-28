@@ -108,8 +108,8 @@ namespace BOTG_Refree
 
         static int[][] permutation2 = { new[] { 0, 1 }, new[] { 1, 0 } };
 
-        static string CodeDir = @"C:\temp\meanmax\";
-        static string DataDir = @"C:\temp\meanmax\";
+        static string CodeDir = @"C:\temp\BotG\";
+        static string DataDir = @"C:\temp\BotG\";
         static string BigRecordFileName = @"big_battle_log.txt";
 
         static void RunCodePair(CodePair cp, int loops)
@@ -242,10 +242,15 @@ namespace BOTG_Refree
     }
 
 
-    public class GameManager<T>
-    {
+	public class GameManager<T> where T : AbstractPlayer
+	{
+		public GameManager()
+		{
+			Const.InitTheThingsInConstThatAreNotConstant();
+		}
+
         internal List<T> players = new List<T>();
-        int league = 6;
+        int league = 7;
         internal int maxTurns = 0;
         internal bool game_ended = false;
 
@@ -253,10 +258,10 @@ namespace BOTG_Refree
         public int getLeagueLevel() { return league; }
         public void setFrameDuration(int value) { }
         public void setMaxTurns(int value) { maxTurns = value; }
-        public List<T> getActivePlayers() { return players; /*TODO*/ }
+        public List<T> getActivePlayers() { return players.Where(p=>p.active).ToList();  }
         public List<T> getPlayers() { return players; }
         public void endGame() { game_ended = true; }
-        public void addToGameSummary(string value) { /*TODO*/ }
+        public void addToGameSummary(string value) { System.Diagnostics.Debug.WriteLine($"SUM: {value}"); }
 
         // API's used to run game
     }
@@ -264,22 +269,25 @@ namespace BOTG_Refree
     public class AbstractPlayer
     {
         int score = 0;
-
+		internal bool active = true;
         // BotG API's
         public string getNicknameToken() { return "Player"; }
-        public void setScore(int value) { }
-        public void deactivate(string message) { }
-        public void sendInputLine(string message)
-        {
-            // Send "input" to the player pipe
-            pro.StandardInput.WriteLine(message);
+        public void setScore(int value) { score = value; }
+        public void deactivate(string message) { active = false; }
+		public void sendInputLine(string message)
+		{
+			// Send "input" to the player pipe
+			pro.StandardInput.WriteLine(message);
+			if (player_id == 0)
+				Debug.WriteLine(message);
+
         }
         public void execute() { }
-        public string[] getOutputs()
+        public string[] getOutputs(int lines_count)
         {
             // Read "output from player pipe
             var input = new List<string>();
-            int lines_count = 2; // _ref.getExpectedOutputLineCountForPlayer(p.player_id))
+            //int lines_count = 2; // _ref.getExpectedOutputLineCountForPlayer(p.player_id))
             while (input.Count < lines_count)
             {
                 string line = pro.StandardOutput.ReadLine();

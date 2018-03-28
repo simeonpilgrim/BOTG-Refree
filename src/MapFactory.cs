@@ -4,49 +4,55 @@ using System.Collections.Generic;
 namespace BOTG_Refree
 {
 
-    public class MapFactory {
-        private static int center = Const.MAPWIDTH / 2;
+	public static class MapFactory
+	{
+		private static int center = Const.MAPWIDTH / 2;
 
-        public List<Bush> generateBushes(CreatureSpawn[] spawns) {
-            List<Bush> obstacles = new List<Bush>();
-            // bushes below the lane
-            int posX = 50;
-            int bottomBushCount = (int)(Const.random.NextDouble() * 4 + 1);
-            for (int i = 0; i < bottomBushCount; i++) {
-                posX = (int)(Const.random.NextDouble() * ((910 - posX) / (bottomBushCount - i)) + posX);
-                if (posX > 910) break;
-                obstacles.Add(Factories.generateBush(new Point(posX, 720)));
-                obstacles.Add(Factories.generateBush(new Point(1920 - posX, 720)));
-                posX += 100;
-            }
+		public static List<Bush> generateBushes(CreatureSpawn[] spawns)
+		{
+			List<Bush> obstacles = new List<Bush>();
+			// bushes below the lane
+			int posX = 50;
+			int bottomBushCount = (int)(Const.random.NextDouble() * 4 + 1);
+			for (int i = 0; i < bottomBushCount; i++)
+			{
+				posX = (int)(Const.random.NextDouble() * ((910 - posX) / (bottomBushCount - i)) + posX);
+				if (posX > 910) break;
+				obstacles.Add(Factories.generateBush(new Point(posX, 720)));
+				obstacles.Add(Factories.generateBush(new Point(1920 - posX, 720)));
+				posX += 100;
+			}
 
-            // bushes above the lane
-            posX = 50;
-            bottomBushCount = (int)(Const.random.NextDouble() * 2 + 2);
-            for (int i = 0; i < bottomBushCount; i++) {
-                posX = (int)(Const.random.NextDouble() * ((910 - posX) / (bottomBushCount - i)) + posX);
-                if (posX > 910) break;
-                obstacles.Add(Factories.generateBush(new Point(posX, 380)));
-                obstacles.Add(Factories.generateBush(new Point(1920 - posX, 380)));
-                posX += 100;
-            }
+			// bushes above the lane
+			posX = 50;
+			bottomBushCount = (int)(Const.random.NextDouble() * 2 + 2);
+			for (int i = 0; i < bottomBushCount; i++)
+			{
+				posX = (int)(Const.random.NextDouble() * ((910 - posX) / (bottomBushCount - i)) + posX);
+				if (posX > 910) break;
+				obstacles.Add(Factories.generateBush(new Point(posX, 380)));
+				obstacles.Add(Factories.generateBush(new Point(1920 - posX, 380)));
+				posX += 100;
+			}
 
-            int extraBushes = (spawns.Length);
-            for (int i = 0; i < extraBushes; i++) {
-                int posY = (int)spawns[i].y;
-                posX = (int)spawns[i].x;
-                spawnExtraBushes(posX - 150, posY - 150, posX + 150, posY + 150, obstacles);
-            }
+			int extraBushes = (spawns.Length);
+			for (int i = 0; i < extraBushes; i++)
+			{
+				int posY = (int)spawns[i].y;
+				posX = (int)spawns[i].x;
+				spawnExtraBushes(posX - 150, posY - 150, posX + 150, posY + 150, obstacles);
+			}
 
-            extraBushes = (int)(Const.random.NextDouble() * 4);
-            for (int i = 0; i < extraBushes; i++) {
-                spawnExtraBushes(Const.MAPWIDTH / 2 - 300, 50, Const.MAPWIDTH / 2 + 300, 300, obstacles);
-            }
-            return obstacles;
-        }
+			extraBushes = (int)(Const.random.NextDouble() * 4);
+			for (int i = 0; i < extraBushes; i++)
+			{
+				spawnExtraBushes(Const.MAPWIDTH / 2 - 300, 50, Const.MAPWIDTH / 2 + 300, 300, obstacles);
+			}
+			return obstacles;
+		}
 
 
-		void spawnExtraBushes(int startX, int startY, int endX, int endY, List<Bush> bushes)
+		static void spawnExtraBushes(int startX, int startY, int endX, int endY, List<Bush> bushes)
 		{
 			for (int i = 0; i < 10; i++)
 			{
@@ -78,7 +84,7 @@ namespace BOTG_Refree
 		}
 
 
-		internal CreatureSpawn[] generateSpawns()
+		internal static CreatureSpawn[] generateSpawns()
 		{
 			int forestCampCount = (int)(Const.random.NextDouble() * 2 + 3);
 			CreatureSpawn[] spawns = new CreatureSpawn[forestCampCount];
@@ -103,26 +109,30 @@ namespace BOTG_Refree
 			return spawns;
 		}
 
-        // starting - early - mid - late
+		// starting - early - mid - late
 
-        public static int[,] ItemLevels = { { 50, 200 }, { 200, 550 }, { 550, 1300 }, { 1300, 3000 } };
-        public Dictionary<string, Item> generateItems(int playersGold) {
+		public static int[,] ItemLevels = { { 50, 200 }, { 200, 550 }, { 550, 1300 }, { 1300, 3000 } };
+		public static Dictionary<string, Item> generateItems(int playersGold)
+		{
 			Dictionary<string, Item> items = new Dictionary<string, Item>();
 
-            for(int l = 0; l < ItemLevels.GetLength(0); l++) {
-                for (int i = 0; i < Const.NB_ITEMS_PER_LEVEL; i++) {
-                    addItem(generateItem(ItemLevels[l,0], ItemLevels[l,1], items.Count + 1), items);
-                }
-            }
-            addItem(generateManaPot(), items);
-            addItem(generateLargePot(), items);
-            addItem(generateXXLPot(), items);
-            return items;
-        }
+			for (int l = 0; l < ItemLevels.GetLength(0); l++)
+			{
+				for (int i = 0; i < Const.NB_ITEMS_PER_LEVEL; i++)
+				{
+					addItem(generateItem(ItemLevels[l, 0], ItemLevels[l, 1], items.Count + 1), items);
+				}
+			}
+			addItem(generateManaPot(), items);
+			addItem(generateLargePot(), items);
+			addItem(generateXXLPot(), items);
+			return items;
+		}
 
-        static void addItem(Item item, Dictionary<string, Item> items) {
-            items[item.name] = item;
-        }
+		static void addItem(Item item, Dictionary<string, Item> items)
+		{
+			items[item.name] = item;
+		}
 
 		static Item generateItem(int lowerLimit, int upperLimit, int nb)
 		{
@@ -186,84 +196,93 @@ namespace BOTG_Refree
 			else if (lowerLimit == ItemLevels[1, 0]) prefix += "Silver";
 			else if (lowerLimit == ItemLevels[2, 0]) prefix += "Golden";
 			else if (lowerLimit == ItemLevels[3, 0]) prefix += "Legendary";
-			return new Item(prefix + "_" + suffix + "_" + nb, stats, findCost(stats), "", false);
+			return new Item(prefix + "_" + suffix + "_" + nb, stats, findCost(stats), false);
 		}
 
-        static Item generateManaPot() {
-            Dictionary<string, int> stats = new Dictionary<string, int>();
-            stats[Const.MANA]= 50;
-            Item pot = new Item("mana_potion", stats, findCost(stats), Const.POTION, true);
-            pot.isPotion = true;
-            return pot;
-        }
-
-        static Item generateLargePot() {
+		static Item generateManaPot()
+		{
 			Dictionary<string, int> stats = new Dictionary<string, int>();
-            stats[Const.HEALTH] = 100;
-            Item pot = new Item("larger_potion", stats, findCost(stats), Const.POTION, true);
-            pot.isPotion = true;
-            return pot;
-        }
+			stats[Const.MANA] = 50;
+			Item pot = new Item("mana_potion", stats, findCost(stats), true);
+			pot.isPotion = true;
+			return pot;
+		}
 
-        static Item generateXXLPot() {
+		static Item generateLargePot()
+		{
 			Dictionary<string, int> stats = new Dictionary<string, int>();
-            stats[Const.HEALTH]= 500;
-            Item pot = new Item("xxl_potion", stats, findCost(stats), Const.POTION, true);
-            pot.isPotion = true;
-            return pot;
-        }
+			stats[Const.HEALTH] = 100;
+			Item pot = new Item("larger_potion", stats, findCost(stats), true);
+			pot.isPotion = true;
+			return pot;
+		}
 
-        public static double healthPrice = 0.7;
-        public static double maxHealthPrice = 0;
-        public static double manaPrice = 0.5;
-        public static double maxManaPrice = 0;
-        public static double damagePrice = 7.2;
-        public static double moveSpeedPrice = 3.6;
-        public static double manaRegPrice = 50;
+		static Item generateXXLPot()
+		{
+			Dictionary<string, int> stats = new Dictionary<string, int>();
+			stats[Const.HEALTH] = 500;
+			Item pot = new Item("xxl_potion", stats, findCost(stats), true);
+			pot.isPotion = true;
+			return pot;
+		}
 
-        static int findCost(Dictionary<string, int> stats) {
-            double totalCost = 0.0;
-            foreach(string stat in stats.Keys) {
-                int val = stats[stat];
-                totalCost += val * getPrice(stat);
-            }
+		public const double healthPrice = 0.7;
+		public const double maxHealthPrice = 0;
+		public const double manaPrice = 0.5;
+		public const double maxManaPrice = 0;
+		public const double damagePrice = 7.2;
+		public const double moveSpeedPrice = 3.6;
+		public const double manaRegPrice = 50;
 
-            // return (int)Math.ceil(totalCost-(totalCost*totalCost/5000)) ;
-            return (int)Math.Min(Math.Max(Math.Ceiling(totalCost / 2.5), Math.Ceiling(totalCost - (totalCost * totalCost / 5000))), 1200);
-        }
+		static int findCost(Dictionary<string, int> stats)
+		{
+			double totalCost = 0.0;
+			foreach (string stat in stats.Keys)
+			{
+				int val = stats[stat];
+				totalCost += val * getPrice(stat);
+			}
 
-        public static int getLimit(string type) {
-            switch (type) {
-            case Const.HEALTH: return 2500;
-            case Const.MAXHEALTH: return 2500;
-            case Const.MANA: return 100;
-            case Const.MAXMANA: return 100;
-            case Const.DAMAGE: return 100000000;
-            case Const.MOVESPEED: return 150;
-            case Const.MANAREGEN: return 50;
-            }
+			// return (int)Math.ceil(totalCost-(totalCost*totalCost/5000)) ;
+			return (int)Math.Min(Math.Max(Math.Ceiling(totalCost / 2.5), Math.Ceiling(totalCost - (totalCost * totalCost / 5000))), 1200);
+		}
 
-            return 0;
-        }
+		public static int getLimit(string type)
+		{
+			switch (type)
+			{
+				case Const.HEALTH: return 2500;
+				case Const.MAXHEALTH: return 2500;
+				case Const.MANA: return 100;
+				case Const.MAXMANA: return 100;
+				case Const.DAMAGE: return 100000000;
+				case Const.MOVESPEED: return 150;
+				case Const.MANAREGEN: return 50;
+			}
 
-        public static double getPrice(string type) {
-            switch (type) {
-            case Const.HEALTH: return healthPrice;
-            case Const.MAXHEALTH: return maxHealthPrice;
-            case Const.MANA: return manaPrice;
-            case Const.MAXMANA: return maxManaPrice;
-            case Const.DAMAGE: return damagePrice;
-            case Const.MOVESPEED: return moveSpeedPrice;
-            case Const.MANAREGEN: return manaRegPrice;
-            }
+			return 0;
+		}
 
-            return 0;
-        }
+		public static double getPrice(string type)
+		{
+			switch (type)
+			{
+				case Const.HEALTH: return healthPrice;
+				case Const.MAXHEALTH: return maxHealthPrice;
+				case Const.MANA: return manaPrice;
+				case Const.MAXMANA: return maxManaPrice;
+				case Const.DAMAGE: return damagePrice;
+				case Const.MOVESPEED: return moveSpeedPrice;
+				case Const.MANAREGEN: return manaRegPrice;
+			}
+
+			return 0;
+		}
 
 		static double addItemCost(int val, string stat, string type, double amplitude)
 		{
 			if (stat == type) return val * amplitude;
 			return 0.0;
 		}
-    }
+	}
 }

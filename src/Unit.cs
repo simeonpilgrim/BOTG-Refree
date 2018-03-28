@@ -190,20 +190,24 @@ namespace BOTG_Refree
 			}
 		}
 
-
+		abstract internal void findAction(List<Unit> allUnits);
+		
 
 		internal Unit findClosestOnOtherTeam(string filter = "none") {
 			Unit closest = null;
 			bool useFilter = filter != "none";
-			double minDist = Const.MAXDOUBLE;
-			foreach (Unit unit in Const.game.allUnits) {
+			double minDist = double.MaxValue;
+			foreach (Unit unit in Const.game.allUnits)
+			{
 				if (useFilter && unit.getType() != filter) continue;
 
 				double dist = Distance2(unit);
 
 				//Closest on other team, if equal take lowest health and if equal highest y (to make equal matches)
 				if ((unit.team == 1 - team || filter == "GROOT") && allowedToAttack(unit) &&
-						(closest == null || minDist > dist || (minDist == dist && (closest.health > unit.health || unit.y > closest.y)))) {
+						(closest == null || dist < minDist || (dist == minDist && (closest.health > unit.health || unit.y > closest.y))))
+				//should be //(closest == null || dist < minDist || (dist == minDist && (closest.health > unit.health || (closest.health == unit.health && unit.y > closest.y)))))
+				{
 					minDist = dist;
 					closest = unit;
 				}
@@ -237,7 +241,7 @@ namespace BOTG_Refree
 			runTowards(p, moveSpeed);
 		}
 
-		internal void afterRound() {
+		virtual internal void afterRound() {
 			if (stunTime > 0) stunTime--;
 			x = Utilities.round(x);
 			y = Utilities.round(y);

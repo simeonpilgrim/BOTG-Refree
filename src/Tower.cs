@@ -13,13 +13,13 @@ namespace BOTG_Refree
         {
         }
 
-        void afterRound()
+        override internal void afterRound()
         {
             base.afterRound();
             aggroTimeLeft--;
         }
 
-        internal void findAction(List<Unit> allUnits)
+        override internal void findAction(List<Unit> allUnits)
         {
             if (aggroUnit != null && aggroTimeLeft > 0 && canAttack(aggroUnit))
             {
