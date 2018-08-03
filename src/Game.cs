@@ -222,7 +222,7 @@ namespace BOTG_Refree
 
 					if (highestDamageUnit.player != null)
 						highestDamageUnit.player.gold += target.goldValue;
-					System.Diagnostics.Debug.WriteLine($"{highestDamageUnit.player.player_id} killed {target.getType()}");
+					//System.Diagnostics.Debug.WriteLine($"{highestDamageUnit.player.player_id} killed {target.getType()}");
 					Const.game.allUnits.Remove(target);
 				}
 				else if (target is Creature)
